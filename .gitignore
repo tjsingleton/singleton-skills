@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+*.py[cod]
+__pycache__/
+*.egg-info/
+.venv/
+
+# Eval outputs (generated, not committed)
+**/evals-workspace/
+
+# Environment
+.env
+*.env.local
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*~
+
+# Node
+node_modules/

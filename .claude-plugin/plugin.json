@@ -1,0 +1,12 @@
+{
+  "name": "singleton-skills",
+  "version": "1.0.0",
+  "description": "TJ Singleton's personal Claude Code skill library",
+  "author": {
+    "name": "TJ Singleton",
+    "url": "https://github.com/tjsingleton"
+  },
+  "homepage": "https://github.com/tjsingleton/singleton-skills",
+  "repository": "https://github.com/tjsingleton/singleton-skills",
+  "license": "MIT"
+}

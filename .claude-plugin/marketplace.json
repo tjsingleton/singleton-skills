@@ -1,0 +1,14 @@
+{
+  "name": "singleton-skills-dev",
+  "description": "Local dev marketplace for singleton-skills",
+  "plugins": [
+    {
+      "name": "singleton-skills",
+      "source": "./",
+      "version": "1.0.0",
+      "author": {
+        "name": "TJ Singleton"
+      }
+    }
+  ]
+}
