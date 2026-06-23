@@ -6,6 +6,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-06-23
+
+### Removed
+- iMCP fallback path (`process_messages.py`). The iMCP/mcpproxy server crashed often,
+  and the SQLite-direct path now covers all messages (including `attributedBody`), so the
+  fallback added crash surface with no remaining benefit. The skill is SQLite-only.
+
 ## [1.1.0] - 2026-06-23
 
 ### Fixed

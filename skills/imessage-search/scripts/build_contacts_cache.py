@@ -3,7 +3,7 @@
 Build a contacts cache from an Address Book .abbu backup.
 
 Reads all Sources/*.abbu SQLite databases, resolves contacts and group membership,
-normalises phone numbers to E.164, and writes a JSON cache used by process_messages.py.
+normalises phone numbers to E.164, and writes a JSON cache used by search_messages_sql.py.
 
 Usage:
     python build_contacts_cache.py [options]

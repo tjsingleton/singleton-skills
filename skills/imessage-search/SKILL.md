@@ -25,12 +25,9 @@ argument-hint: >-
 >
 > If invoked with no arguments, show this hint and wait for a query.
 
-Two search paths — use the best available:
-
-| Path | When available | Speed | Capabilities |
-|------|---------------|-------|--------------|
-| **SQLite direct** (`search_messages_sql.py`) | Always (live DB needs FDA; archive always) | Fast | Full recipient context, group chat detection, no MCP round-trips |
-| **iMCP fallback** (`process_messages.py`) | iMCP server available | Slower | No recipient for sent msgs, no group names |
+Single search path: **SQLite direct** (`search_messages_sql.py`) — reads `chat.db`
+directly (live DB needs Full Disk Access; the archive is always readable). Fast, with
+full recipient context and group-chat detection.
 
 **Default DB paths** (auto-detected in priority order):
 1. `~/Library/Messages/chat.db` — live (needs Full Disk Access for the process that runs the script)
@@ -137,7 +134,7 @@ Simultaneously:
    - `~/.cache/imessage-groups.json` — group name → phone handles
    - `~/.cache/imessage-contacts.json` — contact name → phone handles
    - Own handles (TJ Singleton) are **automatically excluded** — they don't appear in participant joins
-   - If cache miss → fall back to `imcp:contacts_search`; if still not found → search without participant filter and note it
+   - If cache miss → search without participant filter and note it (rebuild the cache if names are missing)
 
 **Cache rebuild:** `python build_contacts_cache.py --groups ~/.cache/imessage-groups.json`
 
@@ -173,12 +170,9 @@ limit: <N or null>
      --output /tmp/messages_out.json \
      --table --summary
 
-2. If chat.db is inaccessible (auth error), fall back to iMCP path:
-   a. Call imcp:messages_fetch via mcpproxy call_tool_read
-   b. Save raw response to /tmp/messages_page_1.json
-   c. Paginate: if results == 100, set end = oldest createdAt, fetch again
-   d. Resolve sender handles via contacts cache (not contacts_search)
-   e. Run process_messages.py on accumulated pages
+2. If chat.db is inaccessible, the script auto-selects the archive DB (coverage
+   through 2025-09-04) and prints an FDA warning to stderr. Surface the FDA
+   pre-flight notice if the query spans post-cutoff dates.
 
 3. Return: table output, JSON contents, total count, any truncation notice
 ```
@@ -223,22 +217,6 @@ python search_messages_sql.py [options]
   --summary       Print count line to stderr
 ```
 
-### `scripts/process_messages.py` — iMCP fallback
-
-```
-python process_messages.py page1.json [page2.json ...] [options]
-
-  --output, -o     Write JSON to file
-  --contacts       JSON map {handle: name}
-  --filter-sent / --filter-recv
-  --query          Post-filter keyword (word-boundary)
-  --query-substr   Use substring match
-  --limit N        Cap results
-  --limit-recent   Keep most recent (default: oldest)
-  --table          Markdown table to stderr
-  --summary        Count line to stderr
-```
-
 ### `scripts/build_contacts_cache.py` — build/refresh cache
 
 ```
@@ -253,7 +231,7 @@ Reads all Sources in the .abbu, writes:
 
 ## Output Schema
 
-Both scripts produce the same record shape:
+Records have this shape:
 
 ```json
 {

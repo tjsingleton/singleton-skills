@@ -2,8 +2,8 @@
 """
 Search iMessages directly from a chat.db SQLite database.
 
-Faster and more complete than the iMCP path — provides full recipient context
-for sent messages, group chat names, and attachment info.
+Provides full recipient context for sent messages, group chat names, and
+attachment info.
 
 Works against:
   - Live DB: ~/Library/Messages/chat.db  (requires Full Disk Access for Terminal)
@@ -29,7 +29,7 @@ Options:
     --table         Print markdown table to stderr
     --summary       Print one-line summary to stderr
 
-Output per record (same schema as process_messages.py):
+Output per record:
     {
       "id": "rowid",
       "timestamp": "2025-01-23T23:32:00Z",
