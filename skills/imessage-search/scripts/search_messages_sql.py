@@ -51,6 +51,11 @@ import argparse
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
+# Local module: decode attributedBody (Apple typedstream) when message.text is
+# NULL — which is the case for ~99% of messages on modern macOS.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from attributed_body import message_text
+
 
 # ---------------------------------------------------------------------------
 # DB discovery
@@ -63,12 +68,27 @@ ARCHIVE_DB = Path("/Volumes/DataDock/Users/tjsingleton/Archives/OldArchives/Mess
 def find_db(explicit: str | None) -> Path:
     if explicit:
         return Path(explicit)
+    # Try live DB first — verify actual read access, not just file existence.
+    # The file exists even without FDA, but SQLite raises OperationalError on open.
     if LIVE_DB.exists():
-        return LIVE_DB
+        try:
+            # Read-only + immutable: never lock the live DB while Messages.app
+            # is writing, and read uncheckpointed rows from chat.db-wal.
+            conn = sqlite3.connect(f"file:{LIVE_DB}?mode=ro&immutable=1", uri=True)
+            conn.execute("SELECT 1")
+            conn.close()
+            return LIVE_DB
+        except sqlite3.OperationalError:
+            print(
+                "Warning: live DB exists but is not readable (FDA not granted). "
+                "Falling back to archive.",
+                file=sys.stderr,
+            )
     if ARCHIVE_DB.exists():
         return ARCHIVE_DB
     raise FileNotFoundError(
-        "No chat.db found. Use --db to specify path, or grant Terminal Full Disk Access."
+        "No accessible chat.db found. Use --db to specify path, or grant Terminal Full Disk Access "
+        "(System Settings → Privacy & Security → Full Disk Access → Terminal)."
     )
 
 
@@ -172,6 +192,7 @@ BASE_SELECT = """
         m.date,
         m.is_from_me,
         m.text,
+        m.attributedBody,
         h.id AS sender_handle,
         c.display_name AS chat_name,
         c.chat_identifier
@@ -182,14 +203,17 @@ BASE_SELECT = """
 """
 
 
-def _base_conditions(keyword, word_boundary, since_ns, before_ns, sent_only, recv_only):
-    """Build the conditions and params shared across both query modes."""
-    conditions = ["m.text IS NOT NULL"]
-    params = []
+def _base_conditions(since_ns, before_ns, sent_only, recv_only):
+    """Build the conditions and params shared across both query modes.
 
-    if keyword:
-        conditions.append("LOWER(m.text) LIKE ?")
-        params.append(f"%{keyword.lower()}%")
+    Keyword matching is intentionally NOT done in SQL: on modern macOS the
+    message body lives in the attributedBody BLOB (text is NULL), which SQL
+    cannot reliably LIKE. The keyword filter runs in Python after decoding —
+    see main(). The old `m.text IS NOT NULL` guard is also gone; it silently
+    excluded ~99% of messages.
+    """
+    conditions = []
+    params = []
 
     if since_ns is not None:
         conditions.append("m.date >= ?")
@@ -207,14 +231,14 @@ def _base_conditions(keyword, word_boundary, since_ns, before_ns, sent_only, rec
 
 
 def build_members_query(
-    keyword, word_boundary, participant_handles,
+    participant_handles,
     since_ns, before_ns, sent_only, recv_only,
 ) -> tuple[str, list]:
     """
     Members mode: any message to/from any member of the group,
     across all 1:1 and group conversations.
     """
-    conditions, params = _base_conditions(keyword, word_boundary, since_ns, before_ns, sent_only, recv_only)
+    conditions, params = _base_conditions(since_ns, before_ns, sent_only, recv_only)
 
     if participant_handles:
         placeholders = ",".join("?" * len(participant_handles))
@@ -228,12 +252,12 @@ def build_members_query(
         """)
         params.extend(participant_handles)
 
-    where = " AND ".join(conditions)
-    return BASE_SELECT + f"WHERE {where} ORDER BY m.date DESC", params
+    clause = f"WHERE {' AND '.join(conditions)} " if conditions else ""
+    return BASE_SELECT + clause + "ORDER BY m.date DESC", params
 
 
 def build_group_chat_query(
-    keyword, word_boundary, group_name, participant_handles,
+    group_name, participant_handles,
     since_ns, before_ns, sent_only, recv_only,
 ) -> tuple[str, list]:
     """
@@ -244,7 +268,7 @@ def build_group_chat_query(
       2. Fall back to finding chats that contain the most group members
          (handles archived DBs where display_name is NULL)
     """
-    conditions, params = _base_conditions(keyword, word_boundary, since_ns, before_ns, sent_only, recv_only)
+    conditions, params = _base_conditions(since_ns, before_ns, sent_only, recv_only)
 
     group_conditions = []
     group_params = []
@@ -278,12 +302,12 @@ def build_group_chat_query(
         conditions.append("(" + " OR ".join(group_conditions) + ")")
         params.extend(group_params)
 
-    where = " AND ".join(conditions)
-    return BASE_SELECT + f"WHERE {where} ORDER BY m.date DESC", params
+    clause = f"WHERE {' AND '.join(conditions)} " if conditions else ""
+    return BASE_SELECT + clause + "ORDER BY m.date DESC", params
 
 
 def build_query(
-    keyword, word_boundary, participant_handles, group_name,
+    participant_handles, group_name,
     since_ns, before_ns, sent_only, recv_only, mode,
 ) -> tuple[str, list]:
     """
@@ -294,12 +318,12 @@ def build_query(
     """
     if mode == "group":
         return build_group_chat_query(
-            keyword, word_boundary, group_name, participant_handles,
+            group_name, participant_handles,
             since_ns, before_ns, sent_only, recv_only,
         )
     # members or both — caller runs members query; "both" runs group query separately
     return build_members_query(
-        keyword, word_boundary, participant_handles,
+        participant_handles,
         since_ns, before_ns, sent_only, recv_only,
     )
 
@@ -389,8 +413,6 @@ def main():
 
     # Build and run query
     common = dict(
-        keyword=args.query,
-        word_boundary=not args.query_substr,
         participant_handles=participant_handles,
         since_ns=since_ns,
         before_ns=before_ns,
@@ -398,7 +420,7 @@ def main():
         recv_only=args.received,
     )
 
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(f"file:{db_path}?mode=ro&immutable=1", uri=True)
     conn.row_factory = sqlite3.Row
 
     if args.mode == "both":
@@ -445,12 +467,17 @@ def main():
             "contact_handle": contact_handle,
             "chat_name": row["chat_name"] or None,
             "chat_identifier": row["chat_identifier"] or None,
-            "message": (row["text"] or "").strip(),
+            "message": message_text(row["text"], row["attributedBody"]).strip(),
         })
 
-    # Word-boundary post-filter
-    if args.query and not args.query_substr:
-        records = word_boundary_filter(records, args.query)
+    # Keyword filter in Python — the body may be decoded from attributedBody,
+    # so it cannot be matched in SQL.
+    if args.query:
+        if args.query_substr:
+            kw = args.query.lower()
+            records = [r for r in records if kw in (r["message"] or "").lower()]
+        else:
+            records = word_boundary_filter(records, args.query)
 
     total = len(records)
     limit = None if args.all else args.limit
