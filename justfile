@@ -1,50 +1,54 @@
 skills_dir := justfile_directory() / "skills"
-claude_skills := env("HOME") / ".claude" / "skills"
 root := justfile_directory()
 
-# Show all skills and install status
-list:
+# Show support, installation, and checkout ownership independently
+list target="shared" shared_dir="" claude_dir="":
     #!/usr/bin/env bash
     set -euo pipefail
-    echo "Skills:"
-    for dir in "{{skills_dir}}"/*/; do
-        name=$(basename "$dir")
-        if [ -L "{{claude_skills}}/$name" ]; then
-            echo "  ✓ $name (symlinked)"
-        else
-            echo "  ✗ $name (not installed)"
-        fi
-    done
+    target_value="{{target}}"
+    shared_value="{{shared_dir}}"
+    claude_value="{{claude_dir}}"
+    target_value="${target_value#target=}"
+    shared_value="${shared_value#shared_dir=}"
+    claude_value="${claude_value#claude_dir=}"
+    args=(list --target "$target_value")
+    [[ -n "$shared_value" ]] && args+=(--shared-dir "$shared_value")
+    [[ -n "$claude_value" ]] && args+=(--claude-dir "$claude_value")
+    python3 "{{root}}/scripts/skill_installer.py" "${args[@]}"
 
-# Symlink all skills to ~/.claude/skills/ + print plugin install instructions
-install:
+# Install the supported set by default; use set=all and/or target=claude|all explicitly
+install set="default" target="shared" shared_dir="" claude_dir="":
     #!/usr/bin/env bash
     set -euo pipefail
-    mkdir -p "{{claude_skills}}"
-    for dir in "{{skills_dir}}"/*/; do
-        name=$(basename "$dir")
-        target="{{claude_skills}}/$name"
-        [ -L "$target" ] && rm "$target"
-        ln -sf "$dir" "$target"
-        echo "Linked: $name → $target"
-    done
-    echo ""
-    echo "To register as a Claude Code plugin, run inside a Claude Code session:"
-    echo "  /plugin marketplace add {{root}}"
-    echo "  /plugin install singleton-skills@singleton-skills-dev"
+    set_value="{{set}}"
+    target_value="{{target}}"
+    shared_value="{{shared_dir}}"
+    claude_value="{{claude_dir}}"
+    set_value="${set_value#set=}"
+    target_value="${target_value#target=}"
+    shared_value="${shared_value#shared_dir=}"
+    claude_value="${claude_value#claude_dir=}"
+    args=(install --set "$set_value" --target "$target_value")
+    [[ -n "$shared_value" ]] && args+=(--shared-dir "$shared_value")
+    [[ -n "$claude_value" ]] && args+=(--claude-dir "$claude_value")
+    python3 "{{root}}/scripts/skill_installer.py" "${args[@]}"
 
-# Remove all skill symlinks from ~/.claude/skills/
-uninstall:
+# Remove only links proven to be owned by this checkout
+uninstall set="default" target="shared" shared_dir="" claude_dir="":
     #!/usr/bin/env bash
     set -euo pipefail
-    for dir in "{{skills_dir}}"/*/; do
-        name=$(basename "$dir")
-        target="{{claude_skills}}/$name"
-        if [ -L "$target" ]; then
-            rm "$target"
-            echo "Removed: $name"
-        fi
-    done
+    set_value="{{set}}"
+    target_value="{{target}}"
+    shared_value="{{shared_dir}}"
+    claude_value="{{claude_dir}}"
+    set_value="${set_value#set=}"
+    target_value="${target_value#target=}"
+    shared_value="${shared_value#shared_dir=}"
+    claude_value="${claude_value#claude_dir=}"
+    args=(uninstall --set "$set_value" --target "$target_value")
+    [[ -n "$shared_value" ]] && args+=(--shared-dir "$shared_value")
+    [[ -n "$claude_value" ]] && args+=(--claude-dir "$claude_value")
+    python3 "{{root}}/scripts/skill_installer.py" "${args[@]}"
 
 # Scaffold a new skill: just new name=my-skill
 new name:
