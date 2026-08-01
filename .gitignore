@@ -12,6 +12,9 @@ __pycache__/
 # Eval outputs (generated, not committed)
 **/evals-workspace/
 
+# oh-my-codex runtime state
+.omx/
+
 # Environment
 .env
 *.env.local
