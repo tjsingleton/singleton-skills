@@ -1,6 +1,18 @@
 skills_dir := justfile_directory() / "skills"
 root := justfile_directory()
 
+# Run all repository tests, portable-core conformance checks, and Python syntax checks
+check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    python3 -m unittest discover -s "{{root}}/tests" -p 'test_*.py'
+    python3 -m unittest discover -s "{{root}}/skills/git-triage/evals" -p 'test_*.py'
+    python3 -m compileall -q \
+        "{{root}}/scripts" \
+        "{{root}}/tests" \
+        "{{root}}/skills/git-triage/evals" \
+        "{{root}}/skills/imessage-search/scripts"
+
 # Show support, installation, and checkout ownership independently
 list target="shared" shared_dir="" claude_dir="":
     #!/usr/bin/env bash
