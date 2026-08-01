@@ -1,10 +1,3 @@
----
-description: 
-alwaysApply: true
----
-
-# Personal Skill Repository
-
 This repository serves as the central registry for custom agent skills.
 
 **Guidelines:**
