@@ -6,6 +6,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Changed
+- Delegated checkout resolution to `dev-skill` and removed the machine-specific fallback.
+- Replaced Claude-specific invocation and argument wording with host-neutral guidance.
+
 ## [1.0.0] - 2026-04-12
 
 ### Added

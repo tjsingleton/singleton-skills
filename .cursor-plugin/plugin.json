@@ -1,10 +1,10 @@
 {
   "name": "singleton-skills",
+  "displayName": "Singleton Skills",
   "version": "1.3.0",
   "description": "Portable agent skills for development workflows across Claude Code, Codex, and Cursor.",
   "author": {
-    "name": "TJ Singleton",
-    "url": "https://github.com/tjsingleton"
+    "name": "TJ Singleton"
   },
   "homepage": "https://github.com/tjsingleton/singleton-skills",
   "repository": "https://github.com/tjsingleton/singleton-skills",
@@ -15,5 +15,6 @@
     "codex",
     "cursor"
   ],
+  "category": "developer-tools",
   "skills": "./skills/"
 }

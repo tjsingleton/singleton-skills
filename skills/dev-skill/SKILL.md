@@ -4,7 +4,7 @@ description: >
   Manage the full development lifecycle for skills in the singleton-skills plugin.
   Use whenever creating a new skill, iterating on an existing skill with evals,
   running skill-creator workflows, or installing/publishing skills.
-  Spawns a subagent scoped to the singleton-skills repo — invoke from any project.
+  Uses a capable subagent when available, with a direct execution fallback.
   Trigger on: "create a skill", "new skill", "iterate skill", "run skill evals",
   "improve skill", "dev skill", "scaffold skill", "skill development".
   Don't use for non-skill tasks or when working in a different skills repo.
@@ -16,45 +16,50 @@ license: MIT
 
 > **Quick usage:**
 > ```
-> /singleton-skills:dev-skill new <name>        # scaffold a new skill
-> /singleton-skills:dev-skill iterate <name>    # full skill-creator loop
-> /singleton-skills:dev-skill eval <name>       # run evals only
-> /singleton-skills:dev-skill install           # symlink all skills
-> /singleton-skills:dev-skill list              # show install status
+> dev-skill new <name>        # scaffold a new skill
+> dev-skill iterate <name>    # full skill-creator loop
+> dev-skill eval <name>       # run evals only
+> dev-skill install           # symlink supported skills
+> dev-skill list              # show install status
 > ```
 >
 > If invoked with no arguments, show this hint and wait for input.
 
 ## Setup
 
-This skill requires `SINGLETON_SKILLS_PATH` to be set:
+Use the host's normal skill invocation syntax. `SINGLETON_SKILLS_PATH` is only
+required when the editable checkout cannot be identified from the current
+workspace:
 
 ```bash
-just register   # run once in singleton-skills to write to ~/.zprofile
+just register   # print shell-neutral setup and marketplace commands
 ```
 
 ## Workflow
 
 ### Step 1 — Parse arguments
 
-Parse `$ARGUMENTS`:
+Parse the arguments supplied with the skill invocation:
 - If empty or `--help`: show usage hint above and stop
 - First word = command: `new`, `eval`, `iterate`, `install`, `list`
 - Remaining = skill name (required for `new`, `eval`, `iterate`)
 
 ### Step 2 — Resolve singleton-skills path
 
-1. Check `$SINGLETON_SKILLS_PATH` env var
-2. Otherwise, resolve the active `dev-skill` directory and use its repository
-   root (two directories above this `SKILL.md`), following symlinks first
-3. Verify the resolved root contains both `justfile` and `skills/dev-skill/SKILL.md`
-4. If resolution fails: tell the user to set `SINGLETON_SKILLS_PATH` or run
-   `just register`, then stop
+1. Resolve and run the bundled `scripts/resolve_repo.py` adjacent to this skill.
+2. The resolver checks explicit `SINGLETON_SKILLS_PATH`, the current Git
+   checkout, and then the active skill's source checkout.
+3. A valid result must be an editable Git checkout containing `justfile` and
+   `skills/dev-skill/SKILL.md`; installed plugin caches are not editable sources.
+4. If resolution fails or finds conflicting checkouts, stop and ask the user to
+   set `SINGLETON_SKILLS_PATH` explicitly.
 
-### Step 3 — Execute in subagent
+### Step 3 — Execute with the available host capability
 
-Spawn a `general-purpose` subagent scoped to the singleton-skills path.
-Always include the resolved path in the subagent prompt.
+When the host supports subagents, delegate the bounded implementation or eval
+step to a capable coding agent scoped to the resolved checkout. Do not require a
+provider-specific role name. If delegation is unavailable, execute the same
+commands directly and preserve the same verification requirements.
 
 ---
 
@@ -82,13 +87,14 @@ Step 1 — Set working directory:
   cd "$SS"
 
 Step 2 — Invoke skill-creator:
-Invoke the skill-creator:skill-creator skill with skills/<name>/ as the target.
+Invoke an installed `skill-creator` capability from the active host's skill
+catalog with `skills/<name>/` as the target. If none is available, stop with a
+clear dependency message rather than searching a host's plugin cache.
 
 Context:
 - SKILL.md is at: $SS/skills/<name>/SKILL.md
 - Evals: $SS/skills/<name>/evals/evals.json
 - Eval workspace (gitignored): $SS/skills/<name>/evals-workspace/
-- skill-creator base: ~/.claude/plugins/cache/claude-plugins-official/skill-creator/unknown/
 
 Use the existing SKILL.md as the starting point. Run the scaffold → eval → improve loop.
 
@@ -96,7 +102,7 @@ Step 3 — Reflect (after skill-creator loop completes):
 Append a changelog entry to $SS/skills/<name>/CHANGELOG.md under the [Unreleased] section.
 Format: Keep a Changelog (https://keepachangelog.com). Use subsections: Added, Changed, Fixed, Removed.
 Include: what changed in the skill, why (user feedback, eval results, design rationale).
-Sanitize before writing: do not include paths like /Users/<name>/ or email addresses.
+Sanitize before writing: do not include personal absolute paths or email addresses.
 If the file doesn't exist, create it with standard Keep a Changelog header and [Unreleased] section.
 ```
 
@@ -110,7 +116,8 @@ Run evals for: skills/<name>/
   SS="<resolved-singleton-skills-path>"
   cd "$SS"
 
-Use the skill-creator:skill-creator eval runner on skills/<name>/evals/evals.json.
+Use the active host's installed `skill-creator` eval runner on
+skills/<name>/evals/evals.json.
 Outputs go to skills/<name>/evals-workspace/iteration-N/.
 Report pass rates and open the viewer.
 ```
@@ -123,7 +130,7 @@ Report pass rates and open the viewer.
   SS="<resolved-singleton-skills-path>"
   cd "$SS" && just install
 
-Report which skills were linked and print the /plugin registration commands.
+Report which skills were linked and print the host marketplace registration commands.
 ```
 
 ---

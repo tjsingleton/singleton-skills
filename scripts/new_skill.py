@@ -44,7 +44,7 @@ license: MIT
 
 > **Quick usage:**
 > ```
-> /singleton-skills:{name} <argument>
+> {name} <argument>
 > ```
 >
 > If invoked with no arguments, show this hint and wait for input.
@@ -57,7 +57,7 @@ TODO: What does this skill do and why does it exist?
 
 ### Step 1 — Parse arguments
 
-Parse `$ARGUMENTS`:
+Parse the arguments supplied through the active host's skill invocation:
 - If empty or `--help`: show usage hint above and stop
 - Otherwise: extract [describe expected args]
 

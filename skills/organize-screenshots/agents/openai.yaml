@@ -1,0 +1,4 @@
+interface:
+  display_name: "Organize Screenshots"
+  short_description: "Group screenshots by day and visual episode"
+  default_prompt: "Use $organize-screenshots to organize these screenshot folders by day and episode."

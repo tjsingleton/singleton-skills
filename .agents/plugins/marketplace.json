@@ -1,0 +1,20 @@
+{
+  "name": "singleton-skills",
+  "interface": {
+    "displayName": "Singleton Skills"
+  },
+  "plugins": [
+    {
+      "name": "singleton-skills",
+      "source": {
+        "source": "url",
+        "url": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

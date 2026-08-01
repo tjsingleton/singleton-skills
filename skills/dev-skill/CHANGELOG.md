@@ -6,6 +6,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Changed
+- Replaced machine and host cache fallbacks with a tested editable-checkout resolver.
+- Made subagent and skill-creator routing capability-based with direct execution fallback.
+- Made setup, invocation examples, and sanitization guidance host-neutral.
+
 ## [1.0.0] - 2026-04-12
 
 ### Added

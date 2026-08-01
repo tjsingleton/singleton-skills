@@ -77,24 +77,15 @@ new name:
     echo "Next: edit skills/{{name}}/SKILL.md"
     echo "Then: just install  (to symlink)"
 
-# Register: write SINGLETON_SKILLS_PATH to shell profile
+# Print shell-neutral registration commands without changing host configuration
 register:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    profile="${HOME}/.zprofile"
-    line="export SINGLETON_SKILLS_PATH=\"{{root}}\""
-    if grep -q "SINGLETON_SKILLS_PATH" "$profile" 2>/dev/null; then
-        echo "SINGLETON_SKILLS_PATH already set in $profile"
-    else
-        echo "$line" >> "$profile"
-        echo "Added to $profile"
-    fi
-    echo ""
-    echo "Reload: source $profile"
-    echo ""
-    echo "To register as a Claude Code plugin, run inside a Claude Code session:"
-    echo "  /plugin marketplace add {{root}}"
-    echo "  /plugin install singleton-skills@singleton-skills-dev"
+    @printf '%s\n' 'export SINGLETON_SKILLS_PATH="{{root}}"'
+    @printf '%s\n' '/plugin marketplace add {{root}}'
+    @printf '%s\n' '/plugin install singleton-skills@singleton-skills'
+    @printf '%s\n' 'codex plugin marketplace add {{root}}'
+    @printf '%s\n' 'codex plugin add singleton-skills@singleton-skills'
+    @printf '%s\n' 'cursor-agent plugin marketplace add https://github.com/tjsingleton/singleton-skills'
+    @printf '%s\n' 'cursor-agent --plugin-dir {{root}}'
 
 # Propose learnings for a skill from its CHANGELOG.md [Unreleased] section: just propose-learnings my-skill
 propose-learnings name:
@@ -107,10 +98,31 @@ propose-learnings name:
     fi
     python3 "{{root}}/scripts/propose_learnings.py" "$changelog"
 
-# Bump version in manifests: just bump ver=1.2.0
+# Bump every version-bearing plugin manifest: just bump ver=1.3.0
 bump ver:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    sed -i '' "s/\"version\": \".*\"/\"version\": \"{{ver}}\"/" "{{root}}/.claude-plugin/plugin.json"
-    sed -i '' "s/\"version\": \".*\"/\"version\": \"{{ver}}\"/" "{{root}}/.claude-plugin/marketplace.json"
-    echo "Bumped to {{ver}}"
+    #!/usr/bin/env python3
+    import json
+    import re
+    from pathlib import Path
+
+    version = "{{ver}}".removeprefix("ver=")
+    if re.fullmatch(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?", version) is None:
+        raise SystemExit(f"invalid semantic version: {version}")
+
+    root_path = Path("{{root}}")
+    manifests = (
+        root_path / ".claude-plugin" / "plugin.json",
+        root_path / ".claude-plugin" / "marketplace.json",
+        root_path / ".cursor-plugin" / "plugin.json",
+        root_path / ".codex-plugin" / "plugin.json",
+    )
+    for manifest in manifests:
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        if manifest.name == "marketplace.json":
+            for plugin in data["plugins"]:
+                plugin["version"] = version
+        else:
+            data["version"] = version
+        manifest.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+
+    print(f"Bumped all plugin manifests to {version}")

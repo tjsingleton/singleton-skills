@@ -15,5 +15,12 @@
     "codex",
     "cursor"
   ],
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Singleton Skills",
+    "shortDescription": "Portable development workflow skills.",
+    "longDescription": "A public, portable collection of agent skills for development workflows across Claude Code, Codex, and Cursor.",
+    "developerName": "TJ Singleton",
+    "category": "Developer Tools"
+  }
 }

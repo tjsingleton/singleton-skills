@@ -1,8 +1,8 @@
 # singleton-skills
 
-A portable collection of [Agent Skills](https://agentskills.io/) with shared
-discovery for Codex and Cursor, an explicit Claude Code route, and an optional
-native Claude plugin.
+A portable collection of [Agent Skills](https://agentskills.io/) with a narrow,
+contract-tested shared route and optional native plugin manifests for Claude
+Code, Codex, and Cursor.
 
 The repository contains more skills than the current portable-core candidate.
 The skills in `supported-skills.txt` are contract-tested candidates for the
@@ -15,7 +15,7 @@ but are not yet portability-certified.
 | --- | --- | --- | --- |
 | `git-triage` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Network-free local snapshot by default; remote refresh and mutations require explicit approval. |
 | `imessage-search` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | macOS Messages access and Full Disk Access are environmental requirements. Small-model delegation is optional; direct execution is the guaranteed fallback. |
-| All other repository skills | Available, not certified | Varies | Installed only with the explicit `all` selection or exposed by the native Claude plugin. |
+| All other repository skills | Available, not certified | Varies | Installed only with the explicit `all` selection or exposed by a native plugin. |
 
 The automated suite verifies the portable contracts and simulates both shared
 and Claude discovery in temporary roots. Live Claude Code, Codex, and Cursor
@@ -75,18 +75,76 @@ remove only installer-owned links with `just uninstall`. Both accept the same
 `target`, `shared_dir`, and `claude_dir` parameters; uninstall also accepts
 `set=default|all`.
 
-### Native Claude plugin: all skills
+### Native plugins: all skills
 
-The existing Claude Code plugin exposes all repository skills and is therefore
-an all-skills, not-yet-portability-certified route:
+The native plugin manifests expose every skill under `skills/`. They are an
+all-skills route and do not expand the portable-core certification claim.
+
+Claude Code:
 
 ```text
 /plugin marketplace add /path/to/singleton-skills
-/plugin install singleton-skills@singleton-skills-dev
+/plugin install singleton-skills@singleton-skills
 ```
 
-Do not enable the native plugin and Claude symlink installation at the same
-time. Claude may discover the same skill twice.
+Codex:
+
+```bash
+codex plugin marketplace add /path/to/singleton-skills
+codex plugin add singleton-skills@singleton-skills
+```
+
+Cursor marketplaces are Git-backed. Register this repository, then install the
+plugin interactively from Cursor's Marketplace panel:
+
+```bash
+cursor-agent plugin marketplace add https://github.com/tjsingleton/singleton-skills
+```
+
+For local development, Cursor Agent can load the checkout directly for a
+session without registering a marketplace:
+
+```bash
+cursor-agent --plugin-dir /path/to/singleton-skills
+```
+
+Do not combine a host's native plugin route with a symlink route containing the
+same skills. The host may discover duplicate skill names.
+
+#### Clean-break migration from `singleton-skills-dev`
+
+The marketplace and plugin IDs are now both `singleton-skills`. Remove the old
+development install and marketplace before registering the new root marketplace.
+
+Claude Code:
+
+```text
+/plugin uninstall singleton-skills@singleton-skills-dev
+/plugin marketplace remove singleton-skills-dev
+/plugin marketplace add /path/to/singleton-skills
+/plugin install singleton-skills@singleton-skills
+```
+
+Codex:
+
+```bash
+codex plugin remove singleton-skills@singleton-skills-dev
+codex plugin marketplace remove singleton-skills-dev
+codex plugin marketplace add /path/to/singleton-skills
+codex plugin add singleton-skills@singleton-skills
+```
+
+Cursor Agent, if the old marketplace was previously registered:
+
+```bash
+cursor-agent plugin marketplace remove singleton-skills-dev
+cursor-agent plugin marketplace add https://github.com/tjsingleton/singleton-skills
+```
+
+This repository only supplies manifests and prints registration commands. It
+does not publish a marketplace or modify Claude Code, Codex, Cursor, or shell
+configuration. Run `just register` to print the export and registration commands
+without applying them.
 
 ## iMessage environment and privacy
 
@@ -132,6 +190,9 @@ Environmental dependencies are separate from agent dependencies:
 ```text
 singleton-skills/
 ├── .claude-plugin/          # Native Claude plugin metadata
+├── .cursor-plugin/          # Native Cursor plugin and marketplace metadata
+├── .codex-plugin/           # Native Codex plugin metadata
+├── .agents/plugins/         # Repo-local Codex marketplace metadata
 ├── skills/<skill-name>/
 │   ├── SKILL.md             # Portable skill definition and discovery metadata
 │   ├── scripts/             # Optional bundled helpers

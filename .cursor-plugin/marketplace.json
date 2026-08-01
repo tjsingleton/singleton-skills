@@ -1,0 +1,16 @@
+{
+  "name": "singleton-skills",
+  "owner": {
+    "name": "TJ Singleton"
+  },
+  "metadata": {
+    "description": "Portable agent skills for Claude Code, Codex, and Cursor."
+  },
+  "plugins": [
+    {
+      "name": "singleton-skills",
+      "source": ".",
+      "description": "Portable agent skills for development workflows across Claude Code, Codex, and Cursor."
+    }
+  ]
+}

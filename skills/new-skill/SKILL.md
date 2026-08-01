@@ -4,7 +4,7 @@ description: >
   Scaffold a new skill in the singleton-skills plugin following all conventions.
   Use when creating a new skill from scratch — generates SKILL.md with correct
   frontmatter (name, description, argument-hint, license), a usage hint block,
-  $ARGUMENTS placeholders, scripts/ directory, and evals/evals.json stub.
+  host-neutral argument guidance, scripts/ directory, and evals/evals.json stub.
   Trigger on: "scaffold a skill", "create a new skill", "new skill template",
   "skill boilerplate". Don't use when iterating on an existing skill — use dev-skill instead.
 argument-hint: "<skill-name>"
@@ -15,7 +15,7 @@ license: MIT
 
 > **Quick usage:**
 > ```
-> /singleton-skills:new-skill <skill-name>
+> new-skill <skill-name>
 > ```
 >
 > If invoked with no arguments, ask for the skill name.
@@ -24,29 +24,26 @@ license: MIT
 
 ### Step 1 — Parse arguments
 
-Parse `$ARGUMENTS` as the skill name. If empty, ask: "What should the new skill be called?"
+Parse the skill name supplied through the host's normal skill invocation. If it
+is empty, ask: "What should the new skill be called?"
 
 Validate: kebab-case, no spaces. If the name has spaces, convert to kebab-case and confirm.
 
 ### Step 2 — Scaffold
 
-Determine `SINGLETON_SKILLS_PATH`:
-1. Check `$SINGLETON_SKILLS_PATH` env var
-2. Fall back to known default: `/Volumes/DataDock/Users/tjsingleton/src/github.com/tjsingleton/singleton-skills`
-
-Run:
-```bash
-cd $SINGLETON_SKILLS_PATH && just new name=$ARGUMENTS
-```
+Invoke `dev-skill new <skill-name>` through the active host's skill catalog.
+`dev-skill` owns editable-checkout resolution and refuses guessed paths or
+installed plugin caches. If `dev-skill` is unavailable, stop and tell the user
+to install the complete `singleton-skills` plugin or supported skill set.
 
 ### Step 3 — Fill in the SKILL.md
 
-Open `skills/$ARGUMENTS/SKILL.md` and help the user fill in:
+Open `skills/<skill-name>/SKILL.md` and help the user fill in:
 
 1. **`description`** — the most important field. Ask:
-   - "When should Claude trigger this skill? What words or phrases would the user say?"
+   - "When should an agent trigger this skill? What words or phrases would the user say?"
    - "What's a concrete example of a user request that should trigger it?"
-   - "When should Claude NOT use it?"
+   - "When should an agent NOT use it?"
    - Write a description that's trigger-rich and includes an explicit "Don't use when" contrast.
 
 2. **`argument-hint`** — what arguments does the skill accept? Document them.
@@ -58,7 +55,7 @@ Open `skills/$ARGUMENTS/SKILL.md` and help the user fill in:
 ### Step 4 — Offer dev cycle
 
 Ask: "Would you like to enter the skill-creator loop to write evals and iterate?"
-- Yes → invoke `/singleton-skills:dev-skill iterate $ARGUMENTS`
+- Yes → invoke `dev-skill iterate <skill-name>` through the active host
 - No → remind the user to run `just install` to symlink the new skill
 
 ---
@@ -82,15 +79,11 @@ Ask: "Would you like to enter the skill-creator loop to write evals and iterate?
 - [ ] Avoids vague verbs — prefers "Use when the user says X" over "Use for X"
 - [ ] Long enough to be specific; short enough to fit in ~300 chars
 
-### Argument injection
+### Invocation arguments
 
-Use `$ARGUMENTS` in the skill body — the runtime substitutes it with the full
-string typed after the skill name before Claude reads the prompt.
-
-`$ARGUMENTS[0]` / `$0` — first positional arg (shell quoting applies).
-
-If the skill body contains no `$ARGUMENTS`, the runtime appends
-`ARGUMENTS: <input>` to the end automatically.
+Describe arguments conceptually in the canonical workflow and use the active
+host's supported invocation mechanism. Do not require a provider-specific
+placeholder or slash-command syntax for the skill to work.
 
 ### Body structure
 
