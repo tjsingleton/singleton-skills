@@ -1,0 +1,22 @@
+[
+  {"query": "before I shut my laptop for the day, can you tell me if i've got anything uncommitted or unpushed lying around in the pkb repo? dont want to lose work when i switch to the mac mini tonight", "should_trigger": true},
+  {"query": "whats the state of all my branches right now — is there anything sitting on a cloud agent branch or another machine that hasnt made it back to main yet?", "should_trigger": true},
+  {"query": "give me the full picture of where my git work stands — local, remote, and any open PRs", "should_trigger": true},
+  {"query": "is everything in this repo pushed and clean, or is there stuff i still need to deal with before i move on", "should_trigger": true},
+  {"query": "triage my git real quick, what actually needs my attention", "should_trigger": true},
+  {"query": "im wrapping up this session, walk me through whats left in git that i should commit or push before i go", "should_trigger": true},
+  {"query": "i've totally lost track of what's done versus in-progress across my branches and remotes, can you sort it out for me", "should_trigger": true},
+  {"query": "do i have any stashes i forgot about? feels like i parked something a couple weeks ago", "should_trigger": false},
+  {"query": "github status? any PRs waiting on me to review or merge", "should_trigger": false},
+  {"query": "worktree status — how many worktrees do i have active and are any abandoned", "should_trigger": false},
+  {"query": "push main to origin", "should_trigger": false},
+  {"query": "commit all my current changes with a sensible message", "should_trigger": false},
+  {"query": "what does the chunking function in packages/kp/src/kp/pipeline/chunking.py actually do, walk me through it", "should_trigger": false},
+  {"query": "rebase my feat/calendar branch onto main and help me resolve the conflicts in process-compose.yaml", "should_trigger": false},
+  {"query": "create a new branch called feat/stash-cleanup off main", "should_trigger": false},
+  {"query": "the pkb-server process keeps crashing on port 8088, can you check process-compose and see whats wrong", "should_trigger": false},
+  {"query": "show me the full diff of process-compose.yaml since my last commit", "should_trigger": false},
+  {"query": "whats the status of the youtube poller, is it still ingesting new videos or did it stall", "should_trigger": false},
+  {"query": "write me a good commit message for the kp migration changes i just staged", "should_trigger": false},
+  {"query": "i think i messed up my last commit, how do i undo it without losing the changes", "should_trigger": false}
+]
