@@ -55,6 +55,7 @@ class PluginManifestTests(unittest.TestCase):
         codex = read_json(".agents/plugins/marketplace.json")
 
         self.assertEqual(claude["name"], PLUGIN_ID)
+        self.assertEqual(claude["owner"], {"name": "TJ Singleton"})
         self.assertEqual(claude["plugins"][0]["name"], PLUGIN_ID)
         self.assertEqual(claude["plugins"][0]["source"], "./")
         self.assertEqual(claude["plugins"][0]["version"], VERSION)
