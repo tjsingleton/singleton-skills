@@ -45,8 +45,11 @@ Parse `$ARGUMENTS`:
 ### Step 2 — Resolve singleton-skills path
 
 1. Check `$SINGLETON_SKILLS_PATH` env var
-2. Fall back to: `/Volumes/DataDock/Users/tjsingleton/src/github.com/tjsingleton/singleton-skills`
-3. If path doesn't exist: tell the user to run `just register` and stop
+2. Otherwise, resolve the active `dev-skill` directory and use its repository
+   root (two directories above this `SKILL.md`), following symlinks first
+3. Verify the resolved root contains both `justfile` and `skills/dev-skill/SKILL.md`
+4. If resolution fails: tell the user to set `SINGLETON_SKILLS_PATH` or run
+   `just register`, then stop
 
 ### Step 3 — Execute in subagent
 
@@ -73,17 +76,28 @@ usage hint block, and workflow steps following the conventions in skills/new-ski
 
 ```
 Run the full skill-creator development loop for: skills/<name>/
-Working directory: <SINGLETON_SKILLS_PATH>
 
+Step 1 — Set working directory:
+  SS="<resolved-singleton-skills-path>"
+  cd "$SS"
+
+Step 2 — Invoke skill-creator:
 Invoke the skill-creator:skill-creator skill with skills/<name>/ as the target.
 
 Context:
-- SKILL.md is at: <SINGLETON_SKILLS_PATH>/skills/<name>/SKILL.md
-- Evals: <SINGLETON_SKILLS_PATH>/skills/<name>/evals/evals.json
-- Eval workspace (gitignored): <SINGLETON_SKILLS_PATH>/skills/<name>/evals-workspace/
+- SKILL.md is at: $SS/skills/<name>/SKILL.md
+- Evals: $SS/skills/<name>/evals/evals.json
+- Eval workspace (gitignored): $SS/skills/<name>/evals-workspace/
 - skill-creator base: ~/.claude/plugins/cache/claude-plugins-official/skill-creator/unknown/
 
 Use the existing SKILL.md as the starting point. Run the scaffold → eval → improve loop.
+
+Step 3 — Reflect (after skill-creator loop completes):
+Append a changelog entry to $SS/skills/<name>/CHANGELOG.md under the [Unreleased] section.
+Format: Keep a Changelog (https://keepachangelog.com). Use subsections: Added, Changed, Fixed, Removed.
+Include: what changed in the skill, why (user feedback, eval results, design rationale).
+Sanitize before writing: do not include paths like /Users/<name>/ or email addresses.
+If the file doesn't exist, create it with standard Keep a Changelog header and [Unreleased] section.
 ```
 
 ---
@@ -92,7 +106,9 @@ Use the existing SKILL.md as the starting point. Run the scaffold → eval → i
 
 ```
 Run evals for: skills/<name>/
-Working directory: <SINGLETON_SKILLS_PATH>
+
+  SS="<resolved-singleton-skills-path>"
+  cd "$SS"
 
 Use the skill-creator:skill-creator eval runner on skills/<name>/evals/evals.json.
 Outputs go to skills/<name>/evals-workspace/iteration-N/.
@@ -104,8 +120,8 @@ Report pass rates and open the viewer.
 #### `install`
 
 ```
-Run in <SINGLETON_SKILLS_PATH>:
-  just install
+  SS="<resolved-singleton-skills-path>"
+  cd "$SS" && just install
 
 Report which skills were linked and print the /plugin registration commands.
 ```
@@ -115,8 +131,8 @@ Report which skills were linked and print the /plugin registration commands.
 #### `list`
 
 ```
-Run in <SINGLETON_SKILLS_PATH>:
-  just list
+  SS="<resolved-singleton-skills-path>"
+  cd "$SS" && just list
 
 Report the output.
 ```

@@ -96,6 +96,17 @@ register:
     echo "  /plugin marketplace add {{root}}"
     echo "  /plugin install singleton-skills@singleton-skills-dev"
 
+# Propose learnings for a skill from its CHANGELOG.md [Unreleased] section: just propose-learnings my-skill
+propose-learnings name:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    changelog="{{skills_dir}}/{{name}}/CHANGELOG.md"
+    if [ ! -f "$changelog" ]; then
+        echo "No CHANGELOG.md found for skill '{{name}}' at $changelog"
+        exit 1
+    fi
+    python3 "{{root}}/scripts/propose_learnings.py" "$changelog"
+
 # Bump version in manifests: just bump ver=1.2.0
 bump ver:
     #!/usr/bin/env bash
