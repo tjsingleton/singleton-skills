@@ -16,27 +16,31 @@ Options:
 
 Output format (~/.cache/imessage-contacts.json):
     {
-      "+17703771812": "TJ Singleton",
-      "+14706401297": "Larry Elrod",
+      "+15550001999": "Local User",
+      "+15550001001": "Example Contact",
       ...
     }
 
 Groups output (--groups flag):
     {
-      "NC Worship Team": ["+14706401297", "+17705242011", ...],
+      "Example Group": ["+15550001001", "+15550001002", ...],
       ...
     }
 """
 
+from __future__ import annotations
+
+import argparse
 import json
 import os
 import re
 import shutil
 import sqlite3
 import sys
-import argparse
 import tempfile
+from contextlib import contextmanager
 from pathlib import Path
+from typing import Iterator
 
 
 # ---------------------------------------------------------------------------
@@ -70,23 +74,30 @@ def normalise_e164(raw: str, default_country="1") -> str | None:
 # Database helpers
 # ---------------------------------------------------------------------------
 
-def open_source_db(db_path: Path) -> sqlite3.Connection | None:
+@contextmanager
+def open_source_db(db_path: Path) -> Iterator[sqlite3.Connection | None]:
     """Copy db + WAL to temp dir and open — avoids locking the original."""
-    tmp = tempfile.mkdtemp(prefix="abbu_")
+    tmp = Path(tempfile.mkdtemp(prefix="abbu_"))
+    conn: sqlite3.Connection | None = None
     try:
-        shutil.copy2(db_path, f"{tmp}/ab.db")
-        wal = Path(str(db_path) + "-wal")
-        shm = Path(str(db_path) + "-shm")
-        if wal.exists():
-            shutil.copy2(wal, f"{tmp}/ab.db-wal")
-        if shm.exists():
-            shutil.copy2(shm, f"{tmp}/ab.db-shm")
-        conn = sqlite3.connect(f"{tmp}/ab.db")
-        conn.row_factory = sqlite3.Row
-        return conn
-    except Exception as e:
-        print(f"  Warning: could not open {db_path}: {e}", file=sys.stderr)
-        return None
+        try:
+            copied_db = tmp / "ab.db"
+            shutil.copy2(db_path, copied_db)
+            wal = Path(str(db_path) + "-wal")
+            shm = Path(str(db_path) + "-shm")
+            if wal.exists():
+                shutil.copy2(wal, tmp / "ab.db-wal")
+            if shm.exists():
+                shutil.copy2(shm, tmp / "ab.db-shm")
+            conn = sqlite3.connect(copied_db)
+            conn.row_factory = sqlite3.Row
+        except Exception as error:
+            print(f"  Warning: could not open {db_path}: {error}", file=sys.stderr)
+        yield conn
+    finally:
+        if conn is not None:
+            conn.close()
+        shutil.rmtree(tmp, ignore_errors=True)
 
 
 def read_source(db_path: Path, verbose: bool = False) -> tuple[dict, dict]:
@@ -96,23 +107,12 @@ def read_source(db_path: Path, verbose: bool = False) -> tuple[dict, dict]:
         contacts: {pk: {"name": str, "handles": [e164, ...]}}
         groups:   {pk: {"name": str, "member_pks": [int, ...]}}
     """
-    conn = open_source_db(db_path)
-    if not conn:
-        return {}, {}
-
     contacts: dict[int, dict] = {}
     groups: dict[int, dict] = {}
 
-    try:
-        # Load all records
-        cur = conn.execute(
-            "SELECT Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZORGANIZATION, ZNAME FROM ZABCDRECORD"
-        )
-        ent_counts: dict[int, int] = {}
-        for row in cur:
-            ent = row["Z_ENT"]
-            ent_counts[ent] = ent_counts.get(ent, 0) + 1
-
+    with open_source_db(db_path) as conn:
+        if conn is None:
+            return {}, {}
         # Determine which Z_ENT is contacts vs groups
         # Groups have ZNAME set but no ZFIRSTNAME/ZLASTNAME
         cur = conn.execute(
@@ -171,9 +171,6 @@ def read_source(db_path: Path, verbose: bool = False) -> tuple[dict, dict]:
             except sqlite3.OperationalError:
                 pass  # Table or column doesn't exist in this source
 
-    finally:
-        conn.close()
-
     if verbose:
         print(f"  {len(contacts)} contacts, {len(groups)} groups", file=sys.stderr)
 
@@ -212,14 +209,14 @@ def build_cache(abbu: Path, verbose: bool = False) -> tuple[dict, dict]:
         contacts, groups = read_source(db_path, verbose=verbose)
 
         # Build handle→name
-        for pk, contact in contacts.items():
+        for contact in contacts.values():
             name = contact["name"]
             for handle in contact["handles"]:
                 if handle not in handle_to_name:
                     handle_to_name[handle] = name
 
         # Build group→handles
-        for gk, group in groups.items():
+        for group in groups.values():
             name = group["name"]
             handles = []
             for member_pk in group["member_pks"]:
@@ -232,6 +229,18 @@ def build_cache(abbu: Path, verbose: bool = False) -> tuple[dict, dict]:
                     group_to_handles[name].append(h)
 
     return handle_to_name, group_to_handles
+
+
+def write_private_json(path: Path, value: dict) -> None:
+    """Write cache JSON with owner-only permissions, including existing files."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    try:
+        os.fchmod(descriptor, 0o600)
+        with os.fdopen(descriptor, "w", encoding="utf-8", closefd=False) as output:
+            output.write(json.dumps(value, indent=2, ensure_ascii=False) + "\n")
+    finally:
+        os.close(descriptor)
 
 
 def main():
@@ -258,15 +267,13 @@ def main():
 
     # Write handle cache
     out = Path(args.output)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(handle_to_name, indent=2, ensure_ascii=False) + "\n")
+    write_private_json(out, handle_to_name)
     print(f"Wrote {len(handle_to_name)} handles → {out}", file=sys.stderr)
 
     # Write groups cache
     if args.groups:
         gout = Path(args.groups)
-        gout.parent.mkdir(parents=True, exist_ok=True)
-        gout.write_text(json.dumps(group_to_handles, indent=2, ensure_ascii=False) + "\n")
+        write_private_json(gout, group_to_handles)
         print(f"Wrote {len(group_to_handles)} groups → {gout}", file=sys.stderr)
     else:
         # Always print groups to stdout for quick inspection

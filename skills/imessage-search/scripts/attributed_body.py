@@ -131,7 +131,9 @@ if __name__ == "__main__":  # pragma: no cover - manual smoke test
     db = sys.argv[1] if len(sys.argv) > 1 else str(
         Path.home() / "Library/Messages/chat.db"
     )
-    conn = sqlite3.connect(f"file:{db}?mode=ro&immutable=1", uri=True)
+    conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True, timeout=1.0)
+    conn.execute("PRAGMA busy_timeout=1000")
+    conn.execute("BEGIN")
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
         "SELECT text, attributedBody FROM message "
@@ -139,4 +141,5 @@ if __name__ == "__main__":  # pragma: no cover - manual smoke test
     ).fetchall()
     for r in rows:
         print(repr(message_text(r["text"], r["attributedBody"])[:120]))
+    conn.rollback()
     conn.close()
