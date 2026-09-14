@@ -1,0 +1,32 @@
+{
+  "skill_name": "delivery-codes",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Scan my Gmail for Uber Eats and DoorDash promo codes and update my Delivery Codes note with anything still valid today.",
+      "expected_behavior": [
+        "Searches both merchants in Gmail and reads full message bodies before deciding eligibility.",
+        "Uses the current local date to reject expired offers and preserves direct-recipient and region restrictions.",
+        "Reads the exact Apple Notes note before editing, deduplicates codes case-insensitively, and re-reads after saving."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Check delivery promos as of 2026-09-12. The note already contains SAVE20, and Gmail has save20 plus a DoorDash offer that expired yesterday.",
+      "expected_behavior": [
+        "Does not add SAVE20 again despite capitalization differences.",
+        "Does not add the offer that expired before 2026-09-12.",
+        "Reports both skip reasons and does not delete existing note entries without an explicit cleanup request."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Add any promo codes you find. One email says the code is just for my account in Canada, but you do not know where I live; another has no clear expiration date.",
+      "expected_behavior": [
+        "Preserves the account-specific and regional restrictions and does not assume the user's region.",
+        "Flags uncertain eligibility rather than silently treating the Canada-only offer as generally valid.",
+        "Does not automatically add the code with an unestablished expiration."
+      ]
+    }
+  ]
+}
