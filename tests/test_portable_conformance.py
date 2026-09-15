@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUPPORTED = ("git-triage", "imessage-search", "plain-english-docs")
+SUPPORTED = ("git-triage", "imessage-search", "visible-delegation", "plain-english-docs")
 SPEC = importlib.util.spec_from_file_location(
     "portable_conformance_installer", ROOT / "scripts" / "skill_installer.py"
 )

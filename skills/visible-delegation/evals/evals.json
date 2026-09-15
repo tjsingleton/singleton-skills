@@ -1,0 +1,22 @@
+{
+  "skill_name": "visible-delegation",
+  "evals": [
+    {
+      "id": "visible-tmux-delegation",
+      "prompt": "Delegate a focused test investigation in parallel and let me watch it.",
+      "expected_behavior": [
+        "Checks tmux and discovers an available delegate CLI before launch.",
+        "Creates a named tmux session, announces its attach command, and does not use a hidden delegate background mode.",
+        "Builds a scoped prompt with acceptance criteria and supervisor-run verification gates.",
+        "Monitors the pane, independently runs the gates after completion, and closes the session."
+      ]
+    },
+    {
+      "id": "do-not-overdelegate",
+      "prompt": "Run git status for me.",
+      "expected_behavior": [
+        "Runs the simple local inspection directly instead of launching a delegate."
+      ]
+    }
+  ]
+}

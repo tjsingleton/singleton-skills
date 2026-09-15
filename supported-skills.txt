@@ -1,3 +1,4 @@
 git-triage
 imessage-search
+visible-delegation
 plain-english-docs

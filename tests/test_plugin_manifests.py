@@ -23,6 +23,7 @@ EXPECTED_SKILLS = {
     "organize-screenshots",
     "plain-english-docs",
     "project-onboard",
+    "visible-delegation",
 }
 
 
