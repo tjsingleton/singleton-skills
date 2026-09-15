@@ -21,6 +21,7 @@ EXPECTED_SKILLS = {
     "learn-from-context",
     "new-skill",
     "organize-screenshots",
+    "plain-english-docs",
     "project-onboard",
 }
 
