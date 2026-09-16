@@ -1,0 +1,41 @@
+{
+  "skill_name": "session-operating-map",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We just split this repository into an auth migration, release validation, and docs refresh. Set up coordination for the parallel sessions.",
+      "expected_behavior": [
+        "Creates or reconciles exactly one repo-local map at docs/operating-map.md after determining the work actually in flight.",
+        "Uses one obvious, kebab-case lane per independent concern and records objective, owning session, current state, and blockers for each active lane.",
+        "Includes the read-first instruction, a decisions section, and a separate done-lanes section rather than using the map as a journal."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "What's in flight in this repo? Do not change anything.",
+      "expected_behavior": [
+        "Reads docs/operating-map.md before reporting coordination state.",
+        "Reports active lanes, owners, blockers, and current decisions from the map without mutating it.",
+        "Flags missing or unknown state instead of inferring ownership or progress."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The release-validation session is blocked waiting for staging credentials; the docs-refresh session finished and discovered that every release needs a smoke-test checklist. Update the operating map.",
+      "expected_behavior": [
+        "Updates the release-validation lane to blocked with the concrete credential blocker, without adding routine progress history.",
+        "Moves docs-refresh out of Active lanes and into Done lanes with a one-line outcome.",
+        "Promotes the reusable smoke-test lesson into appropriate project documentation or a project skill instead of leaving the full lesson only in the done-lane entry."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Join this project and begin changing the authentication code. There is already an operating map.",
+      "expected_behavior": [
+        "Reads the existing docs/operating-map.md before investigating, planning, editing, delegating, or claiming work.",
+        "Respects the existing owner and scope for an active authentication lane rather than silently taking it over.",
+        "Uses a coordinated handoff if ownership must change."
+      ]
+    }
+  ]
+}
