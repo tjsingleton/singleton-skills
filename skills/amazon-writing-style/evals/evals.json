@@ -1,0 +1,31 @@
+{
+  "skill_name": "amazon-writing-style",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Rewrite this memo in Amazon writing style: It was decided that we should launch the new feature due to the fact that it is extremely exciting for many customers.",
+      "expected_behavior": [
+        "Runs python3 scripts/audit_text.py against the draft instead of inventing a sample.",
+        "Lists violations covering SVO (passive), clutter ('due to the fact that'), and data-over-adjectives weasel/evaluative words.",
+        "Outputs a rewrite that names an actor, uses 'because' or equivalent, and marks missing numbers as [NEED METRIC] rather than inventing them."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Do a so-what pass on this: We will add dashboards, alerts, and export so the platform is more robust.",
+      "expected_behavior": [
+        "Does not invent a 6-page narrative or PR/FAQ unless asked.",
+        "Fails the so-what test on a feature list with no customer or team outcome, then rewrites the opening to state action, purpose, and real-world impact.",
+        "Keeps sentences under 30 words in the rewrite."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Use amazon-writing-style with no text attached.",
+      "expected_behavior": [
+        "Asks for the draft and does not invent a sample.",
+        "Does not run the auditor on empty or placeholder prose."
+      ]
+    }
+  ]
+}
