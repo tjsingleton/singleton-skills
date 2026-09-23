@@ -10,6 +10,7 @@ check:
     python3 -m compileall -q \
         "{{root}}/scripts" \
         "{{root}}/tests" \
+        "{{root}}/skills/amazon-writing-style/scripts" \
         "{{root}}/skills/git-triage/evals" \
         "{{root}}/skills/imessage-search/scripts"
 
@@ -98,7 +99,7 @@ propose-learnings name:
     fi
     python3 "{{root}}/scripts/propose_learnings.py" "$changelog"
 
-# Bump every version-bearing plugin manifest: just bump ver=1.3.0
+# Bump every version-bearing plugin manifest: just bump ver=1.4.0
 bump ver:
     #!/usr/bin/env python3
     import json
