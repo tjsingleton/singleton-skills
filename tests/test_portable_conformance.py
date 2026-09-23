@@ -11,7 +11,12 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUPPORTED = ("git-triage", "imessage-search", "plain-english-docs")
+SUPPORTED = (
+    "amazon-writing-style",
+    "git-triage",
+    "imessage-search",
+    "plain-english-docs",
+)
 SPEC = importlib.util.spec_from_file_location(
     "portable_conformance_installer", ROOT / "scripts" / "skill_installer.py"
 )
@@ -108,7 +113,7 @@ class PortableCoreConformanceTests(unittest.TestCase):
         )
         self.assertNotRegex(
             readme,
-            r"\| `(?:git-triage|imessage-search|plain-english-docs)` \| Supported \|",
+            r"\| `(?:amazon-writing-style|git-triage|imessage-search|plain-english-docs)` \| Supported \|",
         )
         self.assertIn("direct execution is the guaranteed fallback", readme)
 
