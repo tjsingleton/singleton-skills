@@ -37,31 +37,57 @@ CLUTTER = [
     (r"\ba number of\b", "a count"),
 ]
 SVO = [
-    r"\b(am|is|are|was|were|be|been|being)\b\s+(\w+ed|\bseen\b|\bchosen\b|\bdriven\b|\bexpected\b|\bmade\b)"
+    r"\b(am|is|are|was|were|be|been|being)\b\s+"
+    r"(approved|built|chosen|completed|created|delivered|designed|driven|"
+    r"expected|given|known|made|measured|owned|rejected|released|removed|"
+    r"reported|scheduled|seen|sent|shipped|updated|written)\b"
 ]
-# Common expansions that do not need a first-use lecture in every sentence.
-KNOWN_ACRONYMS = {
-    "AI",
-    "API",
-    "CEO",
-    "FAQ",
-    "PR",
-    "US",
-    "USA",
-    "UK",
-}
+ACRONYM = re.compile(r"\b[A-Z]{2,}\b")
+DEFINITION = re.compile(
+    r"\b([A-Za-z]+(?:\s+(?:[A-Za-z]+|and|or|of|for|the|to|in)){1,7})"
+    r"\s+\(([A-Z]{2,})\)"
+)
+ACRONYM_STOP_WORDS = {"and", "for", "in", "of", "or", "the", "to"}
 
 
-def _acronyms(sentence: str) -> list[str]:
-    found = re.findall(r"\b[A-Z]{2,}\b", sentence)
-    return [a for a in found if a not in KNOWN_ACRONYMS]
+def _matches_expansion(expansion: str, acronym: str) -> bool:
+    initials = "".join(
+        word[0].upper()
+        for word in expansion.split()
+        if word.lower() not in ACRONYM_STOP_WORDS
+    )
+    return initials == acronym
+
+
+def _unexplained_acronyms(
+    sentence: str, known: set[str]
+) -> tuple[list[str], set[str]]:
+    definitions = {
+        acronym: match.start(2)
+        for match in DEFINITION.finditer(sentence)
+        for expansion, acronym in [match.groups()]
+        if _matches_expansion(expansion, acronym)
+    }
+    unexplained: list[str] = []
+    for match in ACRONYM.finditer(sentence):
+        acronym = match.group()
+        definition_start = definitions.get(acronym)
+        if acronym in known or (
+            definition_start is not None and match.start() >= definition_start
+        ):
+            continue
+        unexplained.append(acronym)
+    known.update(definitions)
+    return unexplained, known
 
 
 def audit_text(text: str) -> dict:
-    sentences = re.split(r"(?<=[.!?])\s+", text.strip())
+    sentences = list(re.finditer(r"\S.*?(?:[.!?](?=\s|$)|$)", text, re.DOTALL))
     report = {"total_violations": 0, "violations_by_sentence": []}
+    known_acronyms: set[str] = set()
 
-    for idx, sentence in enumerate(sentences):
+    for match in sentences:
+        sentence = match.group().strip()
         if not sentence.strip():
             continue
         issues: list[str] = []
@@ -100,7 +126,9 @@ def audit_text(text: str) -> dict:
                     f"SVO: '{match_text}' hides the doer. Name actor + verb."
                 )
 
-        unexplained = _acronyms(sentence)
+        unexplained, known_acronyms = _unexplained_acronyms(
+            sentence, known_acronyms
+        )
         if unexplained:
             issues.append(
                 f"JARGON/ACRONYMS: {unexplained}. Spell out on first use."
@@ -110,7 +138,7 @@ def audit_text(text: str) -> dict:
             report["total_violations"] += len(issues)
             report["violations_by_sentence"].append(
                 {
-                    "line_number": idx + 1,
+                    "line_number": text.count("\n", 0, match.start()) + 1,
                     "sentence": sentence.strip(),
                     "issues": issues,
                 }
