@@ -77,6 +77,7 @@ Skills defined in **singleton-skills** and their intended portability.
 | `imessage-search` | `skills/imessage-search/` | **Yes** — contract-tested | Claude Code, Codex, Cursor | `default` |
 | `plain-english-docs` | `skills/plain-english-docs/` | **Yes** — contract-tested | Claude Code, Codex, Cursor | `default` |
 | `amazon-writing-style` | `skills/amazon-writing-style/` | **Yes** — contract-tested | Claude Code, Codex, Cursor | `default` |
+| `voice-profile` | `skills/voice-profile/` | **Yes** — contract-tested | Claude Code, Codex, Cursor | `default` |
 | `dev-skill` | `skills/dev-skill/` | No | Native plugins; host-dependent | `all` |
 | `learn-from-context` | `skills/learn-from-context/` | No | Native plugins; host-dependent | `all` |
 | `new-skill` | `skills/new-skill/` | No | Native plugins; host-dependent | `all` |

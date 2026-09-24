@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "1.4.0"
+VERSION = "1.5.0"
 PLUGIN_ID = "singleton-skills"
 EXPECTED_SKILLS = {
     "agentic-harness-designer",
@@ -25,6 +25,7 @@ EXPECTED_SKILLS = {
     "organize-screenshots",
     "plain-english-docs",
     "project-onboard",
+    "voice-profile",
 }
 
 
