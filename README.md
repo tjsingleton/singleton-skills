@@ -17,6 +17,7 @@ but are not yet portability-certified.
 | `imessage-search` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | macOS Messages access and Full Disk Access are environmental requirements. Small-model delegation is optional; direct execution is the guaranteed fallback. |
 | `plain-english-docs` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Writes reader-facing documentation and instructions in plain English. |
 | `amazon-writing-style` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Audits and rewrites prose against six Amazon writing rules. |
+| `voice-profile` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Routes TJ's writing jobs to no-ai-slop, Amazon memos, and plain-English how-tos. |
 | All other repository skills | Available, not certified | Varies | Installed only with the explicit `all` selection or exposed by a native plugin. |
 
 The automated suite verifies the portable contracts and simulates both shared

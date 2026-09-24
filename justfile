@@ -99,7 +99,7 @@ propose-learnings name:
     fi
     python3 "{{root}}/scripts/propose_learnings.py" "$changelog"
 
-# Bump every version-bearing plugin manifest: just bump ver=1.4.0
+# Bump every version-bearing plugin manifest: just bump ver=1.5.0
 bump ver:
     #!/usr/bin/env python3
     import json

@@ -1,0 +1,31 @@
+{
+  "skill_name": "voice-profile",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Make this sound like me: We should ship dashboards in order to leverage a more robust platform.",
+      "expected_behavior": [
+        "Asks for audience/surface if missing, then treats this as an Amazon memo register.",
+        "Loads no-ai-slop and amazon-writing-style; runs python3 scripts/audit_text.py from the amazon-writing-style skill directory.",
+        "Does not invent a personality, a sample, or numbers. Marks missing metrics as [NEED METRIC] if the Amazon rewrite needs them."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Rewrite this README install step in my voice: Simply click the button on the right prior to publishing.",
+      "expected_behavior": [
+        "Uses the how-to register and plain-english.md, not the Amazon auditor.",
+        "Names the control, puts place before action, and drops simply/just/easy/please.",
+        "Keeps accuracy; does not invent which Settings label unless the draft already names it."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Write a casual Slack post in my authentic voice.",
+      "expected_behavior": [
+        "Does not invent samples or a personality.",
+        "Stops and asks for 5-10 real samples because registers.md has no confirmed personal-email/post rule."
+      ]
+    }
+  ]
+}
