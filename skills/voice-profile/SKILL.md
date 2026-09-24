@@ -3,9 +3,10 @@ name: voice-profile
 description: >
   Writes, rewrites, or reviews prose in TJ's registers. Use when drafting
   emails, posts, docs, feedback, recipes, READMEs, or anything in my voice.
-  Routes to no-ai-slop always; Amazon writing style for memos and proposals;
-  plain-English how-tos for human-facing instructions. Don't use when the user
-  only wants a grammar pass, a 6-page narrative, or to humanize copy.
+  Uses no-ai-slop when installed, with a bundled clean-prose fallback; Amazon
+  writing style for memos and proposals; plain-English how-tos for human-facing
+  instructions. Don't use when the user only wants a grammar pass, a 6-page
+  narrative, or to humanize copy.
 argument-hint: "[draft path or pasted text]"
 license: MIT
 ---
@@ -41,8 +42,9 @@ Confirm audience, surface, and register before editing.
 
 ### Step 3 — Load companion skills
 
-1. Always read and apply the installed `no-ai-slop` skill. After a rewrite,
-   self-check against its `eval.md`.
+1. If `no-ai-slop` is installed, read and apply it. Otherwise, apply the
+   [built-in clean-prose fallback](#built-in-clean-prose-fallback). After a
+   rewrite, run the fallback self-check below in either case.
 2. If the piece is a proposal, decision, hiring memo, or "why we should do X,"
    also read and apply the sibling `amazon-writing-style` skill. From that skill
    directory, run `python3 scripts/audit_text.py`. How-tos and reference docs
@@ -56,7 +58,8 @@ Confirm audience, surface, and register before editing.
 ### Step 4 — Edit, then stop
 
 Minimum change that helps. Do not full-rewrite strong copy to prove the skill
-ran. One polish pass against confirmed rules and `no-ai-slop`. Stop.
+ran. One polish pass against confirmed rules and the clean-prose self-check.
+Stop.
 
 Zero process residue in the deliverable: no "per the voice profile," no rule
 names, no edit narration. If the user asks, put that in a short **What changed**
@@ -76,20 +79,40 @@ after a verdict. Until then, use the routing table:
 
 | Audience / stakes | Register | Skills |
 | --- | --- | --- |
-| Interviewer how-to, README, recipe | How-to | no-ai-slop + plain-english |
-| Evaluator policy, contracts | Reference | no-ai-slop; define terms at first use |
-| `feedback.md`, discussed-eval | Interview evidence | packet form in `interviewer/feedback-recipe.md`; no-ai-slop; no hire-score theater |
-| Memo / "we should ship this" | Amazon | no-ai-slop + amazon-writing-style |
+| Interviewer how-to, README, recipe | How-to | clean prose + plain-English |
+| Evaluator policy, contracts | Reference | clean prose; define terms at first use |
+| `feedback.md`, discussed-eval | Interview evidence | [feedback packet](feedback-recipe.md); clean prose; no hire-score theater |
+| Memo / "we should ship this" | Amazon | clean prose + amazon-writing-style |
 | Email, Slack, public post | Personal | stop and ask for samples if [registers.md](registers.md) has no confirmed rule for that surface |
 
 One register per section. If a how-to needs background, put the explanation in
 a skippable block. Do not mix tutorial, how-to, reference, and explanation in
 the same section.
 
+## Built-in clean-prose fallback
+
+Preserve the writer's meaning, facts, vocabulary, cadence, bluntness, humor,
+and real uncertainty. Make the minimum effective edit. Cut generic setup,
+repetition, empty qualifiers, tangled sentences, and unsupported attribution.
+Prefer concrete nouns, direct verbs, and active voice when they improve
+clarity. Keep a distinctive sentence when it is already clear. Never invent a
+claim, example, number, source, opinion, or personal detail.
+
+Before delivery, check that:
+
+1. Meaning, facts, and uncertainty match the source.
+2. The point is clear and every changed sentence earns its place.
+3. No unsupported detail or attribution was added.
+4. The anti-patterns below are absent unless the source uses one deliberately
+   as part of the writer's voice.
+5. Strong, distinctive lines were left alone.
+
+Fix any failed check, then run the list again.
+
 ## Anti-patterns
 
-From no-ai-slop, plus this extra list. When the user catches a new one, add it
-here:
+Use this list with either `no-ai-slop` or the bundled fallback. When the user
+catches a new one, add it here:
 
 - delve, foster, leverage, utilize, facilitate, empower, streamline, robust,
   cutting-edge, paradigm, tapestry, realm, beacon, multifaceted, meticulous,

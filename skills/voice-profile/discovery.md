@@ -26,6 +26,7 @@ would the least technical reader follow every step?
 
 ## plain-english-docs
 
-If they want this as a standalone skill, copy `plain-english.md` into its own
-skill folder. Test by rewriting one existing paragraph from the current repo
-and showing both versions.
+Use the existing discoverable
+[plain-english-docs skill](../plain-english-docs/SKILL.md). Verify that the
+active host can discover it, then test it by rewriting one existing paragraph
+from the current repo and showing both versions.
