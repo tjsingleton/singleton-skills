@@ -23,6 +23,7 @@ EXPECTED_SKILLS = {
     "learn-from-context",
     "new-skill",
     "organize-screenshots",
+    "pdf-document-ingestion",
     "plain-english-docs",
     "project-onboard",
     "voice-profile",
