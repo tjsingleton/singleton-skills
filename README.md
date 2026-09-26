@@ -5,28 +5,6 @@ contract-tested shared route and optional native plugin manifests for Claude
 Code, Codex, and Cursor. The repository also packages its skills using the
 [Agent Plugins standard](https://agent-plugins.org/).
 
-The repository contains more skills than the current portable-core candidate.
-The skills in `supported-skills.txt` are contract-tested candidates for the
-intended hosts below; the remaining skills are available for use and development
-but are not yet portability-certified.
-
-## Support matrix
-
-| Skill | Portable-core status | Hosts | Notes |
-| --- | --- | --- | --- |
-| `git-triage` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Network-free local snapshot by default; remote refresh and mutations require explicit approval. |
-| `imessage-search` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | macOS Messages access and Full Disk Access are environmental requirements. Small-model delegation is optional; direct execution is the guaranteed fallback. |
-| `plain-english-docs` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Writes reader-facing documentation and instructions in plain English. |
-| `amazon-writing-style` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Audits and rewrites prose against six Amazon writing rules. |
-| `voice-profile` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Routes TJ's writing jobs to no-ai-slop, Amazon memos, and plain-English how-tos. |
-| All other repository skills | Available, not certified | Varies | Installed only with the explicit `all` selection or exposed by a native plugin. |
-
-The automated suite verifies the portable contracts and simulates both shared
-and Claude discovery in temporary roots. Live Claude Code, Codex, and Cursor
-discovery and behavior smokes remain pending. Until those pass, this matrix
-expresses intended portable support, not certified live cross-host support or
-evidence that every repository skill has cross-agent parity.
-
 ## Installation
 
 ### Recommended: Agent Plugins CLI
@@ -34,7 +12,7 @@ evidence that every repository skill has cross-agent parity.
 Install the plugin into detected supported agent tools at user scope:
 
 ```bash
-npx plugins add tjsingleton/singleton-skills
+npx plugins@latest tjsingleton/singleton-skills -
 ```
 
 The CLI defaults to user scope and auto-detects installed targets. This route
@@ -195,12 +173,12 @@ directly and preserves the same privacy and completeness checks.
 Environmental dependencies are separate from agent dependencies:
 
 - Both supported skills require the local tools they invoke: Git for
-  `git-triage`, and Python 3 plus macOS Messages data for `imessage-search`.
+`git-triage`, and Python 3 plus macOS Messages data for `imessage-search`.
 - GitHub CLI (`gh`) and `pytypedstream` are optional enhancements.
 - No OMX, OMC, provider-specific role, named subagent, or Claude-specific path
-  is required by the supported portable core.
+is required by the supported portable core.
 - Capability-based iMessage delegation is optional; direct parent execution is
-  always the fallback.
+always the fallback.
 
 ## Repository structure
 
