@@ -1,0 +1,21 @@
+{
+  "skill_name": "media-transcription",
+  "evals": [
+    {
+      "id": "local-video-searchable",
+      "prompt": "Make /recordings/team-sync.mov searchable with chapters and speaker labels.",
+      "expected": [
+        "Triggers for the local video and extracts audio with ffmpeg before upload.",
+        "Uses ~/.secrets without exposing ASSEMBLYAI_API_KEY.",
+        "Creates standard transcript, words, chapters, and speakers artifacts beside the source."
+      ]
+    },
+    {
+      "id": "existing-transcript-not-media",
+      "prompt": "Summarize the existing transcript at /notes/interview.md.",
+      "expected": [
+        "Does not trigger because the input is already text."
+      ]
+    }
+  ]
+}

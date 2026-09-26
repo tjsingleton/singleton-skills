@@ -26,6 +26,7 @@ EXPECTED_SKILLS = {
     "image-markup",
     "imessage-search",
     "learn-from-context",
+    "media-transcription",
     "new-skill",
     "organize-screenshots",
     "pdf-document-ingestion",
