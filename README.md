@@ -16,7 +16,9 @@ but are not yet portability-certified.
 | --- | --- | --- | --- |
 | `agentic-harness-designer` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Designs agent harnesses around tools, authority, execution, context, evaluation, and operator visibility. |
 | `amazon-writing-style` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Audits and rewrites prose against six Amazon writing rules. |
+| `current-info-search` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Uses Perplexity Agent API for time-sensitive answers, with source and date discipline. |
 | `git-triage` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Network-free local snapshot by default; remote refresh and mutations require explicit approval. |
+| `heavy-file-ingestion` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Converts large or binary local documents into hash-versioned, source-anchored artifacts before analysis. |
 | `imessage-search` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | macOS Messages access and Full Disk Access are environmental requirements. Small-model delegation is optional; direct execution is the guaranteed fallback. |
 | `visible-delegation` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Delegates bounded work through named, attachable tmux sessions and independently verifies results before cleanup. |
 | `organize-screenshots` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Organizes screenshot collections into chronological, deduplicated groups. |

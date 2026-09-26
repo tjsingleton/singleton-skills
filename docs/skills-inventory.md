@@ -80,8 +80,11 @@ Skills defined in **singleton-skills** and their intended portability.
 | `self-pr-merge` | `skills/self-pr-merge/` | **Yes** — contract-tested | Claude Code, Codex, Cursor | `default` |
 | `amazon-writing-style` | `skills/amazon-writing-style/` | **Yes** — contract-tested | Claude Code, Codex, Cursor | `default` |
 | `voice-profile` | `skills/voice-profile/` | **Yes** — contract-tested | Claude Code, Codex, Cursor | `default` |
+| `image-markup` | `skills/image-markup/` | No | Native plugins; requires image-rendering tools and Chalkduster font | `all` |
+| `media-transcription` | `skills/media-transcription/` | No | Native plugins; requires AssemblyAI credentials and ffmpeg for video | `all` |
 | `dev-skill` | `skills/dev-skill/` | No | Native plugins; host-dependent | `all` |
 | `learn-from-context` | `skills/learn-from-context/` | No | Native plugins; host-dependent | `all` |
+| `session-to-skill-extractor` | `skills/session-to-skill-extractor/` | No | Native plugins; host-dependent | `all` |
 | `new-skill` | `skills/new-skill/` | No | Native plugins; host-dependent | `all` |
 | `project-onboard` | `skills/project-onboard/` | No | Native plugins; host-dependent | `all` |
 | `organize-screenshots` | `skills/organize-screenshots/` | No | Native plugins; host-dependent | `all` |

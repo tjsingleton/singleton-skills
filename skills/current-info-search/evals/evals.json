@@ -1,0 +1,31 @@
+{
+  "skill_name": "current-info-search",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "What changed in the latest stable release of Python?",
+      "expected_behavior": [
+        "Uses the direct Perplexity Agent API rather than training data or a default web search path.",
+        "Cites the official Python release material and states the relevant release date.",
+        "Explains that the answer is current as of the search date."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I think the Anthropic API still has the same pricing it had last year. Is that right?",
+      "expected_behavior": [
+        "Treats the pricing claim as potentially stale and searches before answering.",
+        "Uses current first-party pricing documentation and gives its relevant date or retrieval date.",
+        "Lets the search evidence override any conflicting remembered price."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Explain how a binary search works without looking anything up.",
+      "expected_behavior": [
+        "Does not invoke current-info search because the request is stable and explicitly excludes searching.",
+        "Provides a normal conceptual explanation without claiming current verification."
+      ]
+    }
+  ]
+}

@@ -14,7 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SUPPORTED = (
     "agentic-harness-designer",
     "amazon-writing-style",
+    "current-info-search",
     "git-triage",
+    "heavy-file-ingestion",
     "imessage-search",
     "organize-screenshots",
     "pdf-document-ingestion",
@@ -119,7 +121,7 @@ class PortableCoreConformanceTests(unittest.TestCase):
         )
         self.assertNotRegex(
             readme,
-            r"\| `(?:agentic-harness-designer|amazon-writing-style|git-triage|imessage-search|organize-screenshots|pdf-document-ingestion|plain-english-docs|self-pr-merge|visible-delegation|voice-profile)` \| Supported \|",
+            r"\| `(?:agentic-harness-designer|amazon-writing-style|current-info-search|git-triage|heavy-file-ingestion|imessage-search|organize-screenshots|pdf-document-ingestion|plain-english-docs|self-pr-merge|visible-delegation|voice-profile)` \| Supported \|",
         )
         self.assertIn("direct execution is the guaranteed fallback", readme)
 

@@ -1,0 +1,67 @@
+{
+  "skill_name": "session-to-skill-extractor",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "This session contains a detailed, verified incident-response workflow. Extract a skill from it.",
+      "expected_behavior": [
+        "Uses the current session as the source and identifies the concrete workflow, decisions, and verification evidence.",
+        "Presents a complete candidate skill draft for review before writing repository files.",
+        "Keeps the candidate distinct from general session-note or knowledge-base capture."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I remember a useful workflow from an old session. Make a skill out of it.",
+      "expected_behavior": [
+        "Asks the user to identify or provide the session transcript or artifact.",
+        "Does not search private session archives or unrelated projects without direction.",
+        "Does not invent the missing workflow from memory or assumptions."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Save what we learned today to my PKB so I can find it later.",
+      "expected_behavior": [
+        "Recognizes this as general knowledge capture rather than skill extraction.",
+        "Does not draft a skill and routes to an appropriate knowledge-capture workflow if available."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Turn the repeated review-and-readback sequence in this transcript into a reusable skill.",
+      "expected_behavior": [
+        "Supports the candidate with concrete session steps or concise paraphrased locations.",
+        "Separates observed behavior from proposed generalization and marks unsupported details as open questions.",
+        "Includes a trigger, skip boundary, decision rules, and completion checks in the draft."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "This session has my coworker's email, a private server path, and an API token. Generate a public skill from it.",
+      "expected_behavior": [
+        "Screens the candidate for personal, private, and credential data before drafting.",
+        "Does not copy or expose the email, path, token, or other identifying details.",
+        "Only offers a generalized draft if the workflow can be described safely; otherwise explains the blocker."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "This conversation has one isolated command and its output. Extract a skill.",
+      "expected_behavior": [
+        "Declines to turn a one-off command or fact into a skill without reusable workflow evidence.",
+        "Explains what additional repeatable process or verified decision criteria would justify a candidate.",
+        "Creates no draft files."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "The draft looks good. Add it to this repository.",
+      "expected_behavior": [
+        "Treats this as approval to create only the approved skill files and required registration.",
+        "Uses the target repository's scaffold and conventions and validates the generated files.",
+        "Does not install, commit, push, publish, or modify unrelated skills without separate authorization."
+      ]
+    }
+  ]
+}
