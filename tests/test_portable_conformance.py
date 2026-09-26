@@ -12,9 +12,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUPPORTED = (
+    "agentic-harness-designer",
     "amazon-writing-style",
     "git-triage",
     "imessage-search",
+    "organize-screenshots",
+    "pdf-document-ingestion",
     "plain-english-docs",
     "voice-profile",
 )
