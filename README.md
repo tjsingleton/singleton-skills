@@ -17,6 +17,7 @@ but are not yet portability-certified.
 | `imessage-search` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | macOS Messages access and Full Disk Access are environmental requirements. Small-model delegation is optional; direct execution is the guaranteed fallback. |
 | `visible-delegation` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Delegates bounded work through named, attachable tmux sessions and independently verifies results before cleanup. |
 | `plain-english-docs` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Writes reader-facing documentation and instructions in plain English. |
+| `self-pr-merge` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Reviews a user's own PR before a separately authorized squash merge. |
 | All other repository skills | Available, not certified | Varies | Installed only with the explicit `all` selection or exposed by a native plugin. |
 
 The automated suite verifies the portable contracts and simulates both shared

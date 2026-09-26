@@ -11,7 +11,13 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUPPORTED = ("git-triage", "imessage-search", "visible-delegation", "plain-english-docs")
+SUPPORTED = (
+    "git-triage",
+    "imessage-search",
+    "visible-delegation",
+    "plain-english-docs",
+    "self-pr-merge",
+)
 SPEC = importlib.util.spec_from_file_location(
     "portable_conformance_installer", ROOT / "scripts" / "skill_installer.py"
 )
@@ -108,7 +114,8 @@ class PortableCoreConformanceTests(unittest.TestCase):
         )
         self.assertNotRegex(
             readme,
-            r"\| `(?:git-triage|imessage-search|plain-english-docs)` \| Supported \|",
+            r"\| `(?:git-triage|imessage-search|visible-delegation|plain-english-docs|self-pr-merge)` "
+            r"\| Supported \|",
         )
         self.assertIn("direct execution is the guaranteed fallback", readme)
 
@@ -131,7 +138,7 @@ class PortableCoreConformanceTests(unittest.TestCase):
                         for path in sorted(root.iterdir())
                         if path.is_symlink() and (path / "SKILL.md").is_file()
                     ]
-                    self.assertEqual(discovered, list(SUPPORTED))
+                    self.assertEqual(discovered, sorted(SUPPORTED))
                     self.assertEqual(len(discovered), len(set(discovered)))
                     for name in SUPPORTED:
                         self.assertEqual(
