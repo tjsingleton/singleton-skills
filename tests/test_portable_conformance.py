@@ -12,11 +12,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUPPORTED = (
+    "agentic-harness-designer",
+    "amazon-writing-style",
     "git-triage",
     "imessage-search",
-    "visible-delegation",
+    "organize-screenshots",
+    "pdf-document-ingestion",
     "plain-english-docs",
     "self-pr-merge",
+    "visible-delegation",
+    "voice-profile",
 )
 SPEC = importlib.util.spec_from_file_location(
     "portable_conformance_installer", ROOT / "scripts" / "skill_installer.py"
@@ -114,8 +119,7 @@ class PortableCoreConformanceTests(unittest.TestCase):
         )
         self.assertNotRegex(
             readme,
-            r"\| `(?:git-triage|imessage-search|visible-delegation|plain-english-docs|self-pr-merge)` "
-            r"\| Supported \|",
+            r"\| `(?:agentic-harness-designer|amazon-writing-style|git-triage|imessage-search|organize-screenshots|pdf-document-ingestion|plain-english-docs|self-pr-merge|visible-delegation|voice-profile)` \| Supported \|",
         )
         self.assertIn("direct execution is the guaranteed fallback", readme)
 

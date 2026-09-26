@@ -1,0 +1,43 @@
+{
+  "skill_name": "pdf-document-ingestion",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Capture this 180-page policy PDF as Markdown so we can analyze it later.",
+      "expected_behavior": [
+        "Hashes the original before and after conversion and writes to a separate output path.",
+        "Uses one PDF page-and-region anchor scheme in both the ingested Markdown and downstream citations.",
+        "Writes index.md with artifact, source path, document type, and conversion confidence.",
+        "Proves at least one converted paragraph resolves to the original page region before analysis."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Convert these filled enrollment forms to structured text and summarize the responses.",
+      "expected_behavior": [
+        "Converts the forms before summarizing and preserves the originals unchanged.",
+        "Uses exact, percent-encoded form box labels as the sole canonical anchor scheme for each form source case.",
+        "Marks unreadable or uncertain fields instead of guessing values.",
+        "Analyzes the ingested artifacts once traceability and index checks pass."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The PDF already has an anchored Markdown ingestion beside it. Answer my question from the document.",
+      "expected_behavior": [
+        "Validates that the artifact corresponds to the current source hash and uses the artifact for analysis.",
+        "Does not directly analyze the heavy original while the verified ingested artifact is sufficient.",
+        "Repeats the artifact's existing anchor strings exactly in citations."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Turn this CSV export into a lightweight artifact with citations.",
+      "expected_behavior": [
+        "Uses physical CSV line numbers, counting the header as line 1, as the sole canonical anchors.",
+        "Does not introduce generated row IDs or Markdown line-number citations.",
+        "Adds the artifact to index.md and verifies one converted row against the original line."
+      ]
+    }
+  ]
+}

@@ -11,22 +11,28 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "1.3.0"
+VERSION = "1.5.0"
 PLUGIN_ID = "singleton-skills"
 EXPECTED_SKILLS = {
+    "agentic-harness-designer",
+    "amazon-writing-style",
     "delivery-codes",
     "dev-skill",
     "git-triage",
+    "goal-prompt-generator",
+    "image-gateway",
     "imessage-search",
     "learn-from-context",
     "new-skill",
     "organize-screenshots",
+    "pdf-document-ingestion",
     "plain-english-docs",
     "project-onboard",
+    "self-pr-merge",
+    "session-operating-map",
     "visible-delegation",
+    "voice-profile",
 }
-
-
 def read_json(relative: str) -> dict[str, object]:
     return json.loads((ROOT / relative).read_text(encoding="utf-8"))
 
@@ -51,6 +57,30 @@ class PluginManifestTests(unittest.TestCase):
                 self.assertNotIn("logo", manifest)
                 self.assertNotIn("apps", manifest)
                 self.assertNotIn("mcpServers", manifest)
+
+    def test_root_manifest_conforms_to_agent_plugins_v1(self) -> None:
+        manifest = read_json("plugin.json")
+        self.assertEqual(
+            manifest["$schema"],
+            "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+        )
+        self.assertEqual(manifest["name"], PLUGIN_ID)
+        self.assertEqual(manifest["version"], VERSION)
+        self.assertEqual(manifest["license"], "MIT")
+        self.assertEqual(
+            set(manifest),
+            {
+                "$schema",
+                "name",
+                "version",
+                "description",
+                "author",
+                "homepage",
+                "repository",
+                "license",
+                "keywords",
+            },
+        )
 
     def test_marketplaces_use_the_final_id_and_repository_root_source(self) -> None:
         claude = read_json(".claude-plugin/marketplace.json")
@@ -147,6 +177,7 @@ class PluginManifestTests(unittest.TestCase):
 
         output = completed.stdout
         self.assertIn("SINGLETON_SKILLS_PATH", output)
+        self.assertIn("npx plugins add tjsingleton/singleton-skills", output)
         self.assertIn("singleton-skills@singleton-skills", output)
         self.assertIn("codex plugin marketplace add", output)
         self.assertIn("cursor-agent plugin marketplace add", output)
@@ -176,6 +207,7 @@ class PluginManifestTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_name:
             checkout = Path(temp_name)
             shutil.copy2(ROOT / "justfile", checkout / "justfile")
+            shutil.copy2(ROOT / "plugin.json", checkout / "plugin.json")
             for directory in (".claude-plugin", ".cursor-plugin", ".codex-plugin"):
                 shutil.copytree(ROOT / directory, checkout / directory)
 
@@ -194,6 +226,7 @@ class PluginManifestTests(unittest.TestCase):
             )
 
             for relative in (
+                "plugin.json",
                 ".claude-plugin/plugin.json",
                 ".cursor-plugin/plugin.json",
                 ".codex-plugin/plugin.json",
