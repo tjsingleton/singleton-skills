@@ -20,6 +20,7 @@ EXPECTED_SKILLS = {
     "delivery-codes",
     "dev-skill",
     "git-triage",
+    "heavy-file-ingestion",
     "goal-prompt-generator",
     "heavy-file-ingestion",
     "image-gateway",
