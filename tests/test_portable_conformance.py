@@ -19,6 +19,8 @@ SUPPORTED = (
     "organize-screenshots",
     "pdf-document-ingestion",
     "plain-english-docs",
+    "self-pr-merge",
+    "visible-delegation",
     "voice-profile",
 )
 SPEC = importlib.util.spec_from_file_location(
@@ -117,7 +119,7 @@ class PortableCoreConformanceTests(unittest.TestCase):
         )
         self.assertNotRegex(
             readme,
-            r"\| `(?:amazon-writing-style|git-triage|imessage-search|plain-english-docs|voice-profile)` \| Supported \|",
+            r"\| `(?:agentic-harness-designer|amazon-writing-style|git-triage|imessage-search|organize-screenshots|pdf-document-ingestion|plain-english-docs|self-pr-merge|visible-delegation|voice-profile)` \| Supported \|",
         )
         self.assertIn("direct execution is the guaranteed fallback", readme)
 
@@ -140,7 +142,7 @@ class PortableCoreConformanceTests(unittest.TestCase):
                         for path in sorted(root.iterdir())
                         if path.is_symlink() and (path / "SKILL.md").is_file()
                     ]
-                    self.assertEqual(discovered, list(SUPPORTED))
+                    self.assertEqual(discovered, sorted(SUPPORTED))
                     self.assertEqual(len(discovered), len(set(discovered)))
                     for name in SUPPORTED:
                         self.assertEqual(

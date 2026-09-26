@@ -1,0 +1,6 @@
+{
+  "model": "openai/gpt-image-2.5-sunburst",
+  "quality": "auto",
+  "output_dir": "~/Pictures/image-gateway/",
+  "env_file": "~/.secrets"
+}

@@ -19,6 +19,8 @@ EXPECTED_SKILLS = {
     "delivery-codes",
     "dev-skill",
     "git-triage",
+    "goal-prompt-generator",
+    "image-gateway",
     "imessage-search",
     "learn-from-context",
     "new-skill",
@@ -26,10 +28,11 @@ EXPECTED_SKILLS = {
     "pdf-document-ingestion",
     "plain-english-docs",
     "project-onboard",
+    "self-pr-merge",
+    "session-operating-map",
+    "visible-delegation",
     "voice-profile",
 }
-
-
 def read_json(relative: str) -> dict[str, object]:
     return json.loads((ROOT / relative).read_text(encoding="utf-8"))
 
