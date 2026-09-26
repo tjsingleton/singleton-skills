@@ -80,6 +80,7 @@ new name:
 
 # Print shell-neutral registration commands without changing host configuration
 register:
+    @printf '%s\n' 'npx plugins add tjsingleton/singleton-skills'
     @printf '%s\n' 'export SINGLETON_SKILLS_PATH="{{root}}"'
     @printf '%s\n' '/plugin marketplace add {{root}}'
     @printf '%s\n' '/plugin install singleton-skills@singleton-skills'
@@ -112,6 +113,7 @@ bump ver:
 
     root_path = Path("{{root}}")
     manifests = (
+        root_path / "plugin.json",
         root_path / ".claude-plugin" / "plugin.json",
         root_path / ".claude-plugin" / "marketplace.json",
         root_path / ".cursor-plugin" / "plugin.json",

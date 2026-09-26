@@ -2,7 +2,8 @@
 
 A portable collection of [Agent Skills](https://agentskills.io/) with a narrow,
 contract-tested shared route and optional native plugin manifests for Claude
-Code, Codex, and Cursor.
+Code, Codex, and Cursor. The repository also packages its skills using the
+[Agent Plugins standard](https://agent-plugins.org/).
 
 The repository contains more skills than the current portable-core candidate.
 The skills in `supported-skills.txt` are contract-tested candidates for the
@@ -27,6 +28,19 @@ expresses intended portable support, not certified live cross-host support or
 evidence that every repository skill has cross-agent parity.
 
 ## Installation
+
+### Recommended: Agent Plugins CLI
+
+Install the plugin into detected supported agent tools at user scope:
+
+```bash
+npx plugins add tjsingleton/singleton-skills
+```
+
+The CLI defaults to user scope and auto-detects installed targets. This route
+exposes every skill in the repository, including skills outside the
+portable-core candidate set. To inspect the package without installing it, run
+`npx plugins discover tjsingleton/singleton-skills`.
 
 The ownership-safe symlink installer refuses foreign files, directories, and
 links. It records checkout-specific provenance in
@@ -78,7 +92,7 @@ remove only installer-owned links with `just uninstall`. Both accept the same
 `target`, `shared_dir`, and `claude_dir` parameters; uninstall also accepts
 `set=default|all`.
 
-### Native plugins: all skills
+### Host-native plugin routes: all skills
 
 The native plugin manifests expose every skill under `skills/`. They are an
 all-skills route and do not expand the portable-core certification claim.
@@ -192,6 +206,7 @@ Environmental dependencies are separate from agent dependencies:
 
 ```text
 singleton-skills/
+├── plugin.json             # Agent Plugins portable manifest
 ├── .claude-plugin/          # Native Claude plugin metadata
 ├── .cursor-plugin/          # Native Cursor plugin and marketplace metadata
 ├── .codex-plugin/           # Native Codex plugin metadata

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "singleton-skills",
+  "version": "1.5.0",
+  "description": "Portable agent skills for development workflows across Claude Code, Codex, and Cursor.",
+  "author": {
+    "name": "TJ Singleton",
+    "url": "https://github.com/tjsingleton"
+  },
+  "homepage": "https://github.com/tjsingleton/singleton-skills",
+  "repository": "https://github.com/tjsingleton/singleton-skills",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "claude-code",
+    "codex",
+    "cursor"
+  ]
+}
