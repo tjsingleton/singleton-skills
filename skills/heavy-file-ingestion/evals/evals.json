@@ -1,0 +1,41 @@
+{
+  "skill_name": "heavy-file-ingestion",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Summarize this 220-page PDF for me.",
+      "expected_behavior": [
+        "Creates a hash-versioned _ingested directory and an index before giving a summary.",
+        "Converts the PDF to anchored, page-range Markdown chunks and records converter confidence.",
+        "Opens the analysis gate only after a sampled artifact paragraph resolves to the original PDF location."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Find the budget changes in this board-deck.pptx and this financial-model.xlsx.",
+      "expected_behavior": [
+        "Ingests both binary sources before comparing them.",
+        "Produces slide-anchored deck artifacts and sheet/cell-range-anchored spreadsheet artifacts.",
+        "Uses artifacts and their anchors for the later comparison rather than reading the binaries directly."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Analyze this 900,000-row CSV export.",
+      "expected_behavior": [
+        "Preserves the source and creates inspectable CSV row-range chunks, each no larger than 20,000 data rows unless a smaller chunk is needed.",
+        "Uses physical source line anchors and indexes every chunk with a one-line summary.",
+        "Does not infer values or answer the analysis request until ingestion verification passes."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "The _ingested directory beside my report already matches the report hash. What are the top risks?",
+      "expected_behavior": [
+        "Uses the verified artifacts and index, not the original report, for analysis.",
+        "Reuses the embedded source anchors exactly in its citations.",
+        "Returns to the original only when an artifact cannot resolve the requested claim or an anchor requires verification."
+      ]
+    }
+  ]
+}

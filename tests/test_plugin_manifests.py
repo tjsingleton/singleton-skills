@@ -16,11 +16,14 @@ PLUGIN_ID = "singleton-skills"
 EXPECTED_SKILLS = {
     "agentic-harness-designer",
     "amazon-writing-style",
+    "current-info-search",
     "delivery-codes",
     "dev-skill",
     "git-triage",
     "goal-prompt-generator",
+    "heavy-file-ingestion",
     "image-gateway",
+    "image-markup",
     "imessage-search",
     "learn-from-context",
     "new-skill",
@@ -30,6 +33,7 @@ EXPECTED_SKILLS = {
     "project-onboard",
     "self-pr-merge",
     "session-operating-map",
+    "session-to-skill-extractor",
     "visible-delegation",
     "voice-profile",
 }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Image Markup"
+  short_description: "Add handwritten SVG callouts and render a PNG"
+  default_prompt: "Use $image-markup to annotate this image with an editable SVG overlay and return the final PNG."
