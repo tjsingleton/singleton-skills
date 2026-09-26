@@ -1,0 +1,23 @@
+{
+  "skill_name": "html-artifacts",
+  "evals": [
+    {
+      "id": "dense-review-summary",
+      "prompt": "Summarize this architectural review for the team. It has six risks, two decisions, and a phased migration plan.",
+      "expectations": [
+        "Offers or creates one self-contained HTML report rather than a long chat response.",
+        "Uses the shared Ruby-dark tokens from a single :root block.",
+        "Includes an evidence-oriented report layout and a render verification step."
+      ]
+    },
+    {
+      "id": "explicit-comparison-output-path",
+      "prompt": "Create an HTML comparison of the three hosting options and save it in /private/tmp/decision-artifacts.",
+      "expectations": [
+        "Writes one offline-capable HTML file in the user-specified directory.",
+        "Uses a responsive semantic comparison table and names the stated assumptions.",
+        "Does not use external fonts, images, scripts, stylesheets, or network requests."
+      ]
+    }
+  ]
+}

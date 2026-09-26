@@ -23,6 +23,7 @@ EXPECTED_SKILLS = {
     "heavy-file-ingestion",
     "goal-prompt-generator",
     "heavy-file-ingestion",
+    "html-artifacts",
     "image-gateway",
     "image-markup",
     "imessage-search",

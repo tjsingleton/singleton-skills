@@ -17,6 +17,7 @@ SUPPORTED = (
     "current-info-search",
     "git-triage",
     "heavy-file-ingestion",
+    "html-artifacts",
     "imessage-search",
     "organize-screenshots",
     "pdf-document-ingestion",
