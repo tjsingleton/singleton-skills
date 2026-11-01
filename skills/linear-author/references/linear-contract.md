@@ -30,6 +30,16 @@ Use concrete titles, observable acceptance criteria, and relevant dependencies.
 Small issues can use a few paragraphs and criteria; large specifications can
 retain substantial detail. There is no universal length limit.
 
+Default acceptance criteria to Markdown checklists (`- [ ]` / `- [x]`).
+Check an item only when verified evidence establishes that specific criterion;
+place its artifact pointer and relevant limit beside it. Keep unknown,
+report-only, partially covered, and human-acceptance items unchecked until their
+criteria are verified. Split independently verifiable behaviors when useful;
+a passing subset cannot check an entire test suite or all acceptance work.
+Checkboxes summarize evidence; native status and authority remain separate.
+Keep outcome, current position, and next action easy to scan, with historical
+detail retained where it helps interpret the current work.
+
 Preserve requirements, uncertainty, decisions, limitations, and authority
 boundaries. Inventory these before a rewrite and map each to the resulting
 text or an accessible, identifiable reference. Keep necessary detail in the
