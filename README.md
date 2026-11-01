@@ -241,6 +241,10 @@ matches its directory and whose `description` states when to use the skill.
 
 ## Development and verification
 
+Start with [CONTRIBUTING.md](CONTRIBUTING.md) for setup, code standards, and
+review expectations. Contributor checks require Python 3.11 or newer, Just
+1.59.0 or newer, and the pinned development dependencies.
+
 Create a skill with `just new name=my-skill`. The default install remains
 limited to `supported-skills.txt`; use `set=all` while intentionally testing an
 uncertified skill.
@@ -251,10 +255,14 @@ Run the full public-safe suite with one command:
 just check
 ```
 
-The check runs repository unit/conformance tests, Git triage contract tests, and
-Python bytecode compilation. Fixtures and discovery simulations use temporary
-directories and synthetic data; they never inspect or modify real home skill
-installations, contacts, or Messages databases.
+The check runs Ruff linting, repository unit/conformance tests, Git triage
+contract tests, and Python bytecode compilation. Fixtures and discovery
+simulations use temporary directories and synthetic data; they never inspect or
+modify real home skill installations, contacts, or Messages databases.
+
+The CI workflow runs the same command on pull requests and pushes to `main`,
+using Linux and macOS with Python 3.11 and 3.14. Workflow configuration does not
+establish a successful hosted run or live agent-host compatibility.
 
 ## Public repository notice
 

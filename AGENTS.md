@@ -43,6 +43,8 @@ This repository is the central registry for custom agent skills.
   user confirmation before proceeding.
 
 ## Verification
+- For contributor setup, code standards, and PR preparation, read
+  `CONTRIBUTING.md`.
 - For skill, installer, manifest, or test changes, run `just check` and inspect
   the relevant tests and final diff.
 
@@ -56,8 +58,8 @@ npx plugins@latest tjsingleton/singleton-skills
 
 ### Issue tracker
 
-Track this repository's work in the Singleton Skills project in Linear.
-See `docs/agents/issue-tracker.md`.
+Track this repository's work in the Singleton Skills project in Linear. For
+issue retrieval, updates, and dependencies, see `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
