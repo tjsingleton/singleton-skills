@@ -131,15 +131,19 @@ bump ver:
     print(f"Bumped all plugin manifests to {version}")
 
 # Prepare an unpublished package of committed contents; output must not exist
+[positional-arguments]
 prepare-release output revision="HEAD":
-    python3 "{{root}}/scripts/prepare_release.py" --output "{{output}}" --revision "{{revision}}"
-
-# Read-only migration inventory; redirect private output outside the repository
-inventory target="all" shared_dir="" claude_dir="" consumers="":
     #!/usr/bin/env bash
     set -euo pipefail
-    args=(inventory --target "{{target}}")
-    [[ -n "{{shared_dir}}" ]] && args+=(--shared-dir "{{shared_dir}}")
-    [[ -n "{{claude_dir}}" ]] && args+=(--claude-dir "{{claude_dir}}")
-    [[ -n "{{consumers}}" ]] && args+=(--consumers "{{consumers}}")
+    python3 "{{root}}/scripts/prepare_release.py" --output "$1" --revision "$2"
+
+# Read-only migration inventory; redirect private output outside the repository
+[positional-arguments]
+inventory release target="all" shared_dir="" claude_dir="" consumers="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    args=(inventory --release "$1" --target "$2")
+    [[ -n "$3" ]] && args+=(--shared-dir "$3")
+    [[ -n "$4" ]] && args+=(--claude-dir "$4")
+    [[ -n "$5" ]] && args+=(--consumers "$5")
     python3 "{{root}}/scripts/skill_installer.py" "${args[@]}"

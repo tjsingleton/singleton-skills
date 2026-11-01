@@ -192,6 +192,20 @@ class PluginManifestTests(unittest.TestCase):
         self.assertIn("codex plugin marketplace add", output)
         self.assertIn("cursor-agent plugin marketplace add", output)
 
+    def test_release_recipe_preserves_literal_shell_characters(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_name:
+            output = Path(temp_name) / 'literal $(touch INJECTED) `touch INJECTED` "quote"'
+            result = subprocess.run(["just", "prepare-release", str(output), "HEAD"],
+                                    cwd=ROOT, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue((output / "release.json").is_file())
+            self.assertFalse((ROOT / "INJECTED").exists())
+            rejected = subprocess.run(["just", "prepare-release", str(output / "invalid"),
+                'HEAD$(touch INJECTED)`touch INJECTED`"quote"'],
+                cwd=ROOT, capture_output=True, text=True)
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertFalse((ROOT / "INJECTED").exists())
+
     def test_release_preparation_records_committed_resources_and_versions(self) -> None:
         with tempfile.TemporaryDirectory() as temp_name:
             output = Path(temp_name) / "release"

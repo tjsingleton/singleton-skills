@@ -284,7 +284,7 @@ publishes nothing and changes no installed host configuration.
 Before migration, generate a private read-only inventory:
 
 ```bash
-just inventory all /tmp/example-shared /tmp/example-claude /tmp/consumers.json > /tmp/migration-inventory.json
+just inventory /tmp/singleton-skills-release/release.json all /tmp/example-shared /tmp/example-claude /tmp/consumers.json > /tmp/migration-inventory.json
 ```
 
 Run the inventory script from the owning checkout: another worktree has distinct
@@ -293,8 +293,16 @@ Omit root overrides to inspect the installer's configured shared and Claude
 roots. The optional consumers file maps root kinds to observed consumers, for
 example `{"shared": ["Cursor local", "other compatible host"], "claude": ["Claude Code"]}`.
 The inventory enumerates existing entries, including broken links, foreign
-content and names absent from the current package. Names present in the package
-are overlap candidates, not proof that a replacement is installed. Only matching
+content and names absent from the selected release. The required `release.json`
+input supplies the intended package's skill names, version, source revision, and
+archive hash; inventory records that identity instead of using checkout contents.
+It validates the report's schema and identity fields but does not authenticate the
+report or verify archive bytes. Keep it with the reviewed prepared archive.
+Only directories with a verified `SKILL.md` file (including resolved symlinks)
+can be overlap candidates or direct-only skills. Plain files and non-skill
+directories are foreign content even when their names match the release.
+Broken or unresolvable symlinks are unknown links. Name overlap does not prove
+that a replacement is installed. Only matching
 checkout provenance establishes ownership; legacy links remain unproven.
 Foreign file contents are never read or copied into the report.
 
