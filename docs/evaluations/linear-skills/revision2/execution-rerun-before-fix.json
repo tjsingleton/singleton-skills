@@ -1,0 +1,56 @@
+{
+  "skill_revision": "d2576cf11db57a5ca550420655a2368314084f89",
+  "cases": [
+    {
+      "id": "B",
+      "display": "Rewrite EX-107, reconcile run-8, and triage the supplied export queue — draft only",
+      "full_response": "Draft only. Target: Example workspace / Example team / Export project / EX-107. Native internal IDs remain unresolved; EX-107 is the supplied issue reference.\n\nlinear-author owns the single proposed title/description replacement, incorporating linear-update's evidence reconciliation. linear-triage owns the read-only queue findings. No separate update or repetitive comment is proposed.\n\n```markdown\n# Export CSV and JSON with Unicode, null preservation, and cancellation\n\nProvide CSV and JSON exports that preserve Unicode and null values and support cancellation.\n\n**Current position:** EX-107 remains In Progress. Accessible run-8 verifies CSV Unicode and null behavior only. JSON behavior, cancellation, remaining tests, and the required human walkthrough remain unresolved.\n\n**Next action:** Verify JSON Unicode/null behavior and cancellation, complete the remaining tests, then obtain and record the required human walkthrough. Keep EX-108 blocked on EX-107 until its prerequisite is satisfied.\n\n### Acceptance criteria and evidence\n\n- [x] CSV export preserves Unicode. Evidence: accessible run-8 verifies this behavior; it provides no JSON, cancellation, or human-acceptance evidence.\n- [x] CSV export preserves null values. Evidence: accessible run-8 verifies this behavior; coverage is limited to CSV.\n- [ ] JSON export preserves Unicode. Evidence: no supporting result supplied; verification remains pending.\n- [ ] JSON export preserves null values. Evidence: no supporting result supplied; verification remains pending.\n- [ ] Export supports cancellation. Evidence: run-8 does not cover cancellation; verification remains pending.\n- [ ] Remaining export tests pass. Evidence: the earlier checkpoint recorded tests pending; run-8 resolves only the two CSV criteria above. Remaining test coverage and results must be established.\n- [ ] Required human walkthrough is completed and its outcome recorded. Evidence: the walkthrough is missing; automated results do not satisfy this gate.\n\n### Decisions and operational authority\n\nActivation was separately approved according to the supplied report. Its scope and applicability have not been verified. Preserve this reported decision, but do not use it as authority for an action until its applicability is verified. This request authorizes drafting only and authorizes no activation. Human acceptance and permission for live operation remain separate from technical verification.\n\n### Prior checkpoint\n\nThe source description required CSV and JSON exports, Unicode and null preservation, and cancellation, and recorded tests pending. The supplied snapshot provides no checkpoint date. run-8 now establishes the CSV Unicode/null subset only; all other acceptance work remains unresolved.\n```\n\nExact proposed fields: title and description shown above. Keep native status In Progress: remaining technical and required human acceptance work prevents a completion claim, and actual team transition semantics were not supplied. Workspace, team, project, and existing relationships remain unchanged. No label, priority, assignee, parent, or relationship mutation is proposed; unspecified metadata is not resent.\n\nQueue assessment:\n\n| Issue | Finding and provenance | Concrete next action and limits |\n| --- | --- | --- |\n| EX-109 | Independent and ready according to the controlled queue snapshot; it is the actionable implementation frontier within the supplied queue. | Select its specified implementation work for a separately authorized execution request. No implementation is started by this draft-only request. Detailed outcome and task instructions were not supplied. |\n| EX-107 | In Progress; run-8 supports only CSV Unicode/null behavior. JSON, cancellation, remaining tests, and required human walkthrough are unresolved. | Gather the missing technical evidence, then arrange the human walkthrough. Draft-only scope permits this proposal, not execution or activation. |\n| EX-108 | Has a native dependency on EX-107 in the supplied snapshot. EX-107's acceptance remains incomplete. | Keep dependent implementation blocked; revisit after EX-107's prerequisite is demonstrably satisfied. No dependency removal is proposed. |\n\nCoverage: supplied EX-107 description and status, run-8's stated accessible result, EX-108 dependency, EX-109 readiness, all relevant comments and parents (read and adding no constraints), and the unchanged fresh snapshot. No live retrieval was performed; these are controlled simulation inputs. No broader duplicate search or queue pagination was supplied, so broader coverage is unverified. The frontier is bounded to the supplied queue; actual status meanings, label mappings, internal IDs, EX-109 implementation details, and approval applicability remain gaps. No new issue or merge is proposed.\n\nReconciliation: the earlier undated tests-pending checkpoint is retained as history; run-8 supports only its CSV subset. The reported separate activation approval remains recorded with unverified applicability. It does not authorize activation in this request. No additional constraints or concurrent changes were reported in the fresh read.\n\nOperation accounting: workspace writes requested: none. No tool mutation or activation was executed, and no save was verified. Title and description remain exact proposals. A future authorized write would require a new immediate refresh; no native version preconditions are available, so a refresh and readback would still leave a concurrency race.",
+      "proposed_fields": {
+        "target": {
+          "workspace": "Example",
+          "team": "Example",
+          "project": "Export",
+          "issue": "EX-107",
+          "native_id_resolution": "pending"
+        },
+        "owner": "linear-author",
+        "title": "Export CSV and JSON with Unicode, null preservation, and cancellation",
+        "description": "Provide CSV and JSON exports that preserve Unicode and null values and support cancellation.\n\n**Current position:** EX-107 remains In Progress. Accessible run-8 verifies CSV Unicode and null behavior only. JSON behavior, cancellation, remaining tests, and the required human walkthrough remain unresolved.\n\n**Next action:** Verify JSON Unicode/null behavior and cancellation, complete the remaining tests, then obtain and record the required human walkthrough. Keep EX-108 blocked on EX-107 until its prerequisite is satisfied.\n\n### Acceptance criteria and evidence\n\n- [x] CSV export preserves Unicode. Evidence: accessible run-8 verifies this behavior; it provides no JSON, cancellation, or human-acceptance evidence.\n- [x] CSV export preserves null values. Evidence: accessible run-8 verifies this behavior; coverage is limited to CSV.\n- [ ] JSON export preserves Unicode. Evidence: no supporting result supplied; verification remains pending.\n- [ ] JSON export preserves null values. Evidence: no supporting result supplied; verification remains pending.\n- [ ] Export supports cancellation. Evidence: run-8 does not cover cancellation; verification remains pending.\n- [ ] Remaining export tests pass. Evidence: the earlier checkpoint recorded tests pending; run-8 resolves only the two CSV criteria above. Remaining test coverage and results must be established.\n- [ ] Required human walkthrough is completed and its outcome recorded. Evidence: the walkthrough is missing; automated results do not satisfy this gate.\n\n### Decisions and operational authority\n\nActivation was separately approved according to the supplied report. Its scope and applicability have not been verified. Preserve this reported decision, but do not use it as authority for an action until its applicability is verified. This request authorizes drafting only and authorizes no activation. Human acceptance and permission for live operation remain separate from technical verification.\n\n### Prior checkpoint\n\nThe source description required CSV and JSON exports, Unicode and null preservation, and cancellation, and recorded tests pending. The supplied snapshot provides no checkpoint date. run-8 now establishes the CSV Unicode/null subset only; all other acceptance work remains unresolved.",
+        "unchanged": {
+          "status": "In Progress",
+          "relationships": "EX-108 depends on EX-107; preserve existing relationships"
+        },
+        "relationship_operations": []
+      },
+      "findings": [
+        {
+          "issue": "EX-107",
+          "finding": "Only CSV Unicode/null criteria verified by run-8; JSON, cancellation, remaining tests, and required human walkthrough unresolved. Reported activation approval retained, applicability unverified; no activation authorized."
+        },
+        {
+          "issue": "EX-108",
+          "finding": "Dependent implementation blocked on incomplete EX-107."
+        },
+        {
+          "issue": "EX-109",
+          "finding": "Independent and ready within supplied snapshot; next implementation selection requires a separate execution request."
+        }
+      ],
+      "requested_operations": [],
+      "simulated_returns": [
+        {
+          "source": "controlled initial snapshot",
+          "result": "Issue, comments, parents, queue dependencies and evidence supplied; no added constraints."
+        },
+        {
+          "source": "accessible run-8",
+          "result": "CSV Unicode and null behavior only; no other criterion proved."
+        },
+        {
+          "source": "controlled fresh read",
+          "result": "Unchanged; no write performed. Native version preconditions unavailable."
+        }
+      ]
+    }
+  ]
+}

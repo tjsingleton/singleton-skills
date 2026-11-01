@@ -7,6 +7,7 @@ import argparse
 import fcntl
 import json
 import os
+import re
 import sys
 import tempfile
 from contextlib import contextmanager
@@ -624,11 +625,86 @@ def list_status(repo_root: Path, target: str, roots: Mapping[str, Path]) -> list
     return lines
 
 
+def load_release(path: Path) -> dict:
+    """Validate the operator-selected package report at the CLI boundary."""
+    report = json.loads(path.read_text())
+    if (not isinstance(report, dict) or report.get("schema_version") != 1
+            or report.get("plugin") != "singleton-skills"
+            or not isinstance(report.get("version"), str)
+            or re.fullmatch(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?", report["version"]) is None
+            or any(not isinstance(report.get(key), str)
+                   or re.fullmatch(pattern, report[key]) is None
+                   for key, pattern in (("source_revision", r"(?:[0-9a-f]{40}|[0-9a-f]{64})"),
+                                        ("archive_sha256", r"[0-9a-f]{64}")))
+            or not isinstance(report.get("skills"), list) or not report["skills"]
+            or any(not isinstance(name, str) or re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) is None
+                   for name in report["skills"])
+            or len(set(report["skills"])) != len(report["skills"])):
+        raise InstallerError("invalid release.json package identity or skill inventory")
+    return report
+
+
+def migration_inventory(
+    repo_root: Path, target: str, roots: Mapping[str, Path],
+    consumers: Mapping[str, list[str]], release_path: Path,
+) -> dict[str, object]:
+    """Observe entries without locks, directory creation, or ownership adoption."""
+    checkout = repo_root.resolve(strict=True)
+    provenance, _ = _load_provenance(checkout / PROVENANCE_NAME, checkout)
+    release = load_release(release_path)
+    packaged = set(release["skills"])
+    entries = []
+    unresolved = []
+    for root in selected_roots(target, roots):
+        affected = consumers.get(root.kind, [])
+        if not affected:
+            unresolved.append(root.kind)
+        if not root.path.exists():
+            continue
+        for path in sorted(root.path.iterdir()):
+            record = _record_for(provenance["records"], path)
+            link = _actual_link_value(path)
+            source = checkout / "skills" / path.name
+            desired = DesiredLink(path.name, root.kind, root.path, source.resolve(), path)
+            owned = _is_owned(desired, record, checkout)
+            try:
+                # Following a link proves only content shape, never ownership.
+                path.stat()
+                skill_entry = path.is_dir() and (path / "SKILL.md").is_file()
+                classification = ("overlap-candidate" if skill_entry and path.name in packaged
+                                  else "direct-only" if skill_entry else "foreign-content")
+            except OSError:
+                classification = "unknown-link" if path.is_symlink() else "unknown-content"
+            entries.append({
+                "skill": path.name, "target_kind": root.kind, "target_path": str(path),
+                "classification": classification,
+                "entry_kind": "symlink" if link is not None else "directory" if path.is_dir() else "file",
+                "ownership": "checkout-provenance" if owned else "unproven",
+                "provenance": record, "affected_consumers": affected,
+                "consumers_complete": False,
+                "restoration": {"link_value": link, "source_exists": path.exists(),
+                                "requirement": "retain source revision and provenance backup; back up non-link content before any separately authorized cleanup"},
+                "replacement_requirements": [
+                    "confirm every consumer, including other hosts and remote environments",
+                    "verify installed plugin version, revision and resource hashes",
+                    "discover and safely invoke the selected copy on each consumer",
+                    "verify bundled resources, dependencies and restoration before removal"],
+                "cleanup_ready": False,
+            })
+    return {"schema_version": 1, "read_only": True, "entries": entries,
+            "package": {key: release[key] for key in ("version", "source_revision", "archive_sha256")},
+            "unresolved_consumers": unresolved,
+            "consumer_scope": "operator-supplied observations; completeness unverified",
+            "consumer_completeness": "unresolved for every selected root, including roots with observed consumers"}
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("install", "list", "uninstall"))
+    parser.add_argument("command", choices=("install", "list", "uninstall", "inventory"))
     parser.add_argument("--set", dest="selection", choices=("default", "all"), default="default")
     parser.add_argument("--target", choices=("shared", "claude", "all"), default="shared")
+    parser.add_argument("--release", type=Path, help="Prepared release.json required for inventory")
+    parser.add_argument("--consumers", type=Path, help="Private JSON mapping root kinds to observed consumer names")
     parser.add_argument("--shared-dir")
     parser.add_argument("--claude-dir")
     return parser
@@ -639,7 +715,18 @@ def main(argv: list[str] | None = None) -> int:
     repo_root = Path(__file__).resolve().parent.parent
     roots = resolve_roots(args.shared_dir, args.claude_dir)
     try:
-        if args.command == "install":
+        if args.command == "inventory":
+            if args.release is None:
+                raise InstallerError("inventory requires --release release.json")
+            consumers = json.loads(args.consumers.read_text()) if args.consumers else {}
+            if (not isinstance(consumers, dict) or any(
+                key not in {"shared", "claude"} or not isinstance(value, list)
+                or any(not isinstance(item, str) or not item.strip() for item in value)
+                for key, value in consumers.items()
+            )):
+                raise InstallerError("consumers must map shared/claude to lists of names")
+            print(json.dumps(migration_inventory(repo_root, args.target, roots, consumers, args.release), indent=2))
+        elif args.command == "install":
             changed = install(repo_root, args.selection, args.target, roots)
             for item in changed:
                 print(f"Linked [{item.target_kind}]: {item.skill_name} -> {item.target_path}")
@@ -657,7 +744,7 @@ def main(argv: list[str] | None = None) -> int:
         else:
             for line in list_status(repo_root, args.target, roots):
                 print(line)
-    except InstallerError as exc:
+    except (InstallerError, OSError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
     return 0

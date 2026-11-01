@@ -133,3 +133,21 @@ bump ver:
         manifest.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
     print(f"Bumped all plugin manifests to {version}")
+
+# Prepare an unpublished package of committed contents; output must not exist
+[positional-arguments]
+prepare-release output revision="HEAD":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    python3 "{{root}}/scripts/prepare_release.py" --output "$1" --revision "$2"
+
+# Read-only migration inventory; redirect private output outside the repository
+[positional-arguments]
+inventory release target="all" shared_dir="" claude_dir="" consumers="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    args=(inventory --release "$1" --target "$2")
+    [[ -n "$3" ]] && args+=(--shared-dir "$3")
+    [[ -n "$4" ]] && args+=(--claude-dir "$4")
+    [[ -n "$5" ]] && args+=(--consumers "$5")
+    python3 "{{root}}/scripts/skill_installer.py" "${args[@]}"

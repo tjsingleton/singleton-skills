@@ -1,0 +1,30 @@
+{
+  "skill_revision": "5977182f2f4b695acea0b9f127d9d29ab0772ab8",
+  "case_revisions": {
+    "A": "d2576cf11db57a5ca550420655a2368314084f89",
+    "B": "f52f67c88df02bdaecbfd1737374b4dbc634553d",
+    "C": "d2576cf11db57a5ca550420655a2368314084f89"
+  },
+  "instruction_paths": [
+    "skills/linear-author/SKILL.md",
+    "skills/linear-update/SKILL.md",
+    "skills/linear-triage/SKILL.md",
+    "skills/linear-author/references/linear-contract.md"
+  ],
+  "sha256": {
+    "skills/linear-author/SKILL.md": "4861b375c0b82077f43945821e4873d42bfb3e03cc01299d6aad9631ba11abb5",
+    "skills/linear-update/SKILL.md": "e7fce3732188e114cf8e15343faa799d20eb8097b1a7680e374054d3c6ac1d71",
+    "skills/linear-triage/SKILL.md": "575cc5cee542e733182d46ac147df8e8268cddff8ffa68d5eecad5096723326b",
+    "skills/linear-author/references/linear-contract.md": "4aa147f8e92776c78749b94b9c3930f07a1881b448a7605a98ea9d8bca64de00",
+    "docs/evaluations/linear-skills/revision2/execution-b-after-fix.json": "af289b1c9c56eaaff6925406f3f3e65617ecb2722d969b8d58ee2577e445cd82",
+    "docs/evaluations/linear-skills/revision2/execution-initial.json": "4425b75dac49cf960eb9f2ddd31b8cd772488dad4f0b6101e6f1c701c4749baa",
+    "docs/evaluations/linear-skills/revision2/execution-rerun-before-fix.json": "1f4267e8cdf40996899ffb0e355c6df5f99440a9224285fbbbc2169867eac1c8",
+    "docs/evaluations/linear-skills/revision2/execution.json": "c8fc907ac1a121d3ca422d9f5fca50e7d967013c5fade07bbdf7fbeaf3c0ff28",
+    "docs/evaluations/linear-skills/revision2/facilitator-key.md": "c70c318944a379cd6ebad11f61b0aaa410b09c17446878c43c85a93382df5ce4",
+    "docs/evaluations/linear-skills/revision2/findings.md": "1b6c2d168c9237bfdefa8d92ac70af61a7632295a46659757f6ce1a6d57dc0f1",
+    "docs/evaluations/linear-skills/revision2/pair-a.md": "8551c13facde3c0e3da15f397c38f62d6170318dea81a3f10ea56610a912d5c5",
+    "docs/evaluations/linear-skills/revision2/pair-b.md": "477956674070d87c8ac2d3cdb756f589817fa502262712e6f8d2a69c9909d69e",
+    "docs/evaluations/linear-skills/revision2/protocol.md": "a676e44e628d3dba06a56b47042684531c12b7872ea203a6e8e6b38d53b6cca7",
+    "docs/evaluations/linear-skills/revision2/source-snapshots.json": "c0f3bfb340d5770a7c181683c25a435f09861a6039e153f1a7fc4f1cce4a8f85"
+  }
+}

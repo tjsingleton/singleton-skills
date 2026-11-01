@@ -1,0 +1,13 @@
+{
+  "A": {
+    "source_case": "status-history",
+    "original": "Example workspace, Example team, Export project. EX-101 native Done. Description: outcome reliable export; current: implementation not started (2026-01-02). Criteria: preserve ordering, cancellation, tests, human walkthrough. Separate activation approval required. New report says tests pass at artifact build-9; read artifact confirms tests cover ordering and cancellation only. Walkthrough absent. Team statuses: In Progress means work or acceptance outstanding; Done means all issue criteria met. No writes authorized. Comments/parent/dependencies read, none.",
+    "request": "Draft the progress reconciliation for EX-101."
+  },
+  "B": {
+    "source_case": "combined",
+    "original": "Example/Example/Export. EX-107 In Progress. Description: Export CSV and JSON; preserve Unicode and nulls; support cancellation. Current tests pending. New accessible run-8 proves CSV Unicode/null behavior only. Human walkthrough required and missing; activation separately approved. Queue: EX-108 depends on EX-107; EX-109 independent and ready. All comments and parents read, no additional constraints. Before write fresh read unchanged. No version preconditions.",
+    "request": "Rewrite EX-107 for clarity, reconcile progress, triage supplied queue, draft only.",
+    "variant": "Remove simulated update/readback success from combined fixture. Activation approval must be verified for applicability before activation; no activation authorized."
+  }
+}

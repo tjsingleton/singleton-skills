@@ -1,0 +1,13 @@
+{
+  "skill_revision": "5e08a702493308a8b410840e825d5d33c47e056d",
+  "sha256": {
+    "skills/linear-author/SKILL.md": "4861b375c0b82077f43945821e4873d42bfb3e03cc01299d6aad9631ba11abb5",
+    "skills/linear-update/SKILL.md": "f0e86b24fbc39467a13ec382430f626ce63c50e1239d8158666c4af72daa1cfe",
+    "skills/linear-triage/SKILL.md": "8b5f9ed845c9aebb748d49985f4f80ebea37343c73e9517c8bafed5a7e1ca3ff",
+    "skills/linear-author/references/linear-contract.md": "a2567a59f7b6aa0ae1f09adbb53cc18f115a7004891770d13b0ff9ecd90695d9",
+    "skills/linear-update/evals/evals.json": "ff0096a3b64e07fbf333c46090d620d4f7df5797b885507db1e26a797cd34728",
+    "docs/evaluations/linear-skills/source-snapshots.json": "1c5ccdc80f92615bb8c1bdfde31c08bd8c9d323761454a5a368e3c4f12d5c2fb",
+    "docs/evaluations/linear-skills/pair-a.md": "05940c8bdcc10a04f392922ca5937fb238c31e386b4ab50f48ca7462c9ddab79",
+    "docs/evaluations/linear-skills/pair-b.md": "45a40d7c29d052832d05f06024a08e0a0b8bd51720d38e54d28b62ce292f3c98"
+  }
+}

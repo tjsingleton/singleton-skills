@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
 import shutil
 import subprocess
+import tarfile
 import tempfile
 import unittest
 from pathlib import Path
@@ -27,6 +29,9 @@ EXPECTED_SKILLS = {
     "image-gateway",
     "image-markup",
     "imessage-search",
+    "linear-author",
+    "linear-triage",
+    "linear-update",
     "learn-from-context",
     "media-transcription",
     "new-skill",
@@ -188,6 +193,102 @@ class PluginManifestTests(unittest.TestCase):
         self.assertIn("singleton-skills@singleton-skills", output)
         self.assertIn("codex plugin marketplace add", output)
         self.assertIn("cursor-agent plugin marketplace add", output)
+
+    def test_release_recipe_preserves_literal_shell_characters(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_name:
+            output = Path(temp_name) / 'literal $(touch INJECTED) `touch INJECTED` "quote"'
+            result = subprocess.run(["just", "prepare-release", str(output), "HEAD"],
+                                    cwd=ROOT, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue((output / "release.json").is_file())
+            self.assertFalse((ROOT / "INJECTED").exists())
+            rejected = subprocess.run(["just", "prepare-release", str(output / "invalid"),
+                'HEAD$(touch INJECTED)`touch INJECTED`"quote"'],
+                cwd=ROOT, capture_output=True, text=True)
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertFalse((ROOT / "INJECTED").exists())
+
+    def test_release_preparation_records_committed_resources_and_versions(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_name:
+            output = Path(temp_name) / "release"
+            result = subprocess.run(
+                ["python3", str(ROOT / "scripts/prepare_release.py"), "--output", str(output)],
+                cwd=ROOT, text=True, capture_output=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            report = json.loads((output / "release.json").read_text())
+            self.assertEqual(report["version"], VERSION)
+            self.assertRegex(report["source_revision"], r"^[0-9a-f]{40}$")
+            self.assertEqual(set(report["skills"]), EXPECTED_SKILLS)
+            self.assertIn("skills/linear-author/references/linear-contract.md", report["files"])
+            self.assertTrue((output / "singleton-skills.tar").is_file())
+
+    def test_release_provides_reproducible_standalone_work_upload(self) -> None:
+        catalogs = {".claude-plugin/marketplace.json", ".cursor-plugin/marketplace.json",
+                    ".agents/plugins/marketplace.json"}
+        with tempfile.TemporaryDirectory() as temp_name:
+            archives = []
+            for attempt in ("first", "second"):
+                output = Path(temp_name) / attempt
+                result = subprocess.run(
+                    ["just", "prepare-release", str(output), "HEAD"],
+                    cwd=ROOT, text=True, capture_output=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                report = json.loads((output / "release.json").read_text())
+                upload = output / "singleton-skills-work.tar.gz"
+                self.assertTrue(upload.is_file(), "Work requires a standalone upload archive")
+                archives.append(upload.read_bytes())
+                with tarfile.open(upload) as package:
+                    contents = {member.name: package.extractfile(member).read()
+                                for member in package.getmembers() if member.isfile()}
+                self.assertEqual(set(contents), set(report["files"]) - catalogs)
+                self.assertEqual(report["work_upload"]["files"],
+                                 {name: digest for name, digest in report["files"].items()
+                                  if name not in catalogs})
+                self.assertEqual(report["work_upload"]["files"],
+                                 {name: hashlib.sha256(content).hexdigest()
+                                  for name, content in contents.items()})
+                self.assertEqual(report["work_upload"]["archive_sha256"],
+                                 hashlib.sha256(archives[-1]).hexdigest())
+                self.assertEqual(report["work_upload"]["archive"], upload.name)
+                with tarfile.open(output / "singleton-skills.tar") as package:
+                    self.assertTrue(catalogs.issubset(package.getnames()))
+                original = subprocess.check_output([
+                    "git", "archive", "--format=tar", report["source_revision"], "--",
+                    "plugin.json", ".claude-plugin", ".codex-plugin", ".cursor-plugin",
+                    ".agents/plugins", "skills", "LICENSE", "README.md", "supported-skills.txt"],
+                    cwd=ROOT)
+                self.assertEqual((output / "singleton-skills.tar").read_bytes(), original)
+                self.assertEqual(report["archive_sha256"], hashlib.sha256(original).hexdigest())
+            self.assertEqual(archives[0], archives[1])
+
+    def test_release_rejects_divergent_committed_versions_without_output(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_name:
+            checkout = Path(temp_name) / "checkout"
+            checkout.mkdir()
+            for directory in (".claude-plugin", ".cursor-plugin", ".codex-plugin", ".agents/plugins"):
+                shutil.copytree(ROOT / directory, checkout / directory)
+            shutil.copy2(ROOT / "plugin.json", checkout)
+            for name in ("LICENSE", "README.md", "supported-skills.txt"):
+                shutil.copy2(ROOT / name, checkout)
+            (checkout / "scripts").mkdir()
+            shutil.copy2(ROOT / "scripts/prepare_release.py", checkout / "scripts")
+            (checkout / "skills/example").mkdir(parents=True)
+            (checkout / "skills/example/SKILL.md").write_text("synthetic")
+            manifest = read_json_from(checkout / "plugin.json")
+            manifest["version"] = "9.0.0"
+            (checkout / "plugin.json").write_text(json.dumps(manifest))
+            for args in (["init", "-q"], ["add", "."],
+                         ["-c", "user.name=Example", "-c", "user.email=example@example.invalid", "commit", "-qm", "fixture"]):
+                subprocess.run(["git", *args], cwd=checkout, check=True, capture_output=True)
+            output = Path(temp_name) / "release"
+            result = subprocess.run(
+                ["python3", str(checkout / "scripts/prepare_release.py"), "--output", str(output)],
+                text=True, capture_output=True,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("versions disagree", result.stderr)
+            self.assertFalse(output.exists())
 
     def test_new_skill_template_is_host_neutral(self) -> None:
         with tempfile.TemporaryDirectory() as temp_name:

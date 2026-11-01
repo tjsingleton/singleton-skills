@@ -54,8 +54,19 @@ This repository is the central registry for custom agent skills.
 npx plugins@latest tjsingleton/singleton-skills
 ```
 
-## Issue tracker
+## Agent skills
 
-Track work in the Singleton Skills project in Linear. For issue retrieval,
-updates, and dependencies, read `docs/agents/issue-tracker.md`. For triage,
-read `docs/agents/triage-labels.md` and reuse the existing canonical labels.
+### Issue tracker
+
+Track this repository's work in the Singleton Skills project in Linear. For
+issue retrieval, updates, and dependencies, see `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Use the five canonical triage labels already available in the TJ Singleton
+team. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Use a single-context layout with a root glossary and repository ADRs.
+See `docs/agents/domain.md`.
