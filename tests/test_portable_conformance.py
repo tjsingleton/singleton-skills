@@ -19,6 +19,7 @@ SUPPORTED = (
     "heavy-file-ingestion",
     "html-artifacts",
     "imessage-search",
+    "linear-author",
     "organize-screenshots",
     "pdf-document-ingestion",
     "plain-english-docs",
