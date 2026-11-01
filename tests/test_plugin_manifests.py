@@ -192,6 +192,49 @@ class PluginManifestTests(unittest.TestCase):
         self.assertIn("codex plugin marketplace add", output)
         self.assertIn("cursor-agent plugin marketplace add", output)
 
+    def test_release_preparation_records_committed_resources_and_versions(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_name:
+            output = Path(temp_name) / "release"
+            result = subprocess.run(
+                ["python3", str(ROOT / "scripts/prepare_release.py"), "--output", str(output)],
+                cwd=ROOT, text=True, capture_output=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            report = json.loads((output / "release.json").read_text())
+            self.assertEqual(report["version"], VERSION)
+            self.assertRegex(report["source_revision"], r"^[0-9a-f]{40}$")
+            self.assertEqual(set(report["skills"]), EXPECTED_SKILLS)
+            self.assertIn("skills/linear-author/references/linear-contract.md", report["files"])
+            self.assertTrue((output / "singleton-skills.tar").is_file())
+
+    def test_release_rejects_divergent_committed_versions_without_output(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_name:
+            checkout = Path(temp_name) / "checkout"
+            checkout.mkdir()
+            for directory in (".claude-plugin", ".cursor-plugin", ".codex-plugin", ".agents/plugins"):
+                shutil.copytree(ROOT / directory, checkout / directory)
+            shutil.copy2(ROOT / "plugin.json", checkout)
+            for name in ("LICENSE", "README.md", "supported-skills.txt"):
+                shutil.copy2(ROOT / name, checkout)
+            (checkout / "scripts").mkdir()
+            shutil.copy2(ROOT / "scripts/prepare_release.py", checkout / "scripts")
+            (checkout / "skills/example").mkdir(parents=True)
+            (checkout / "skills/example/SKILL.md").write_text("synthetic")
+            manifest = read_json_from(checkout / "plugin.json")
+            manifest["version"] = "9.0.0"
+            (checkout / "plugin.json").write_text(json.dumps(manifest))
+            for args in (["init", "-q"], ["add", "."],
+                         ["-c", "user.name=Example", "-c", "user.email=example@example.invalid", "commit", "-qm", "fixture"]):
+                subprocess.run(["git", *args], cwd=checkout, check=True, capture_output=True)
+            output = Path(temp_name) / "release"
+            result = subprocess.run(
+                ["python3", str(checkout / "scripts/prepare_release.py"), "--output", str(output)],
+                text=True, capture_output=True,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("versions disagree", result.stderr)
+            self.assertFalse(output.exists())
+
     def test_new_skill_template_is_host_neutral(self) -> None:
         with tempfile.TemporaryDirectory() as temp_name:
             skill_dir = Path(temp_name) / "sample-skill"
