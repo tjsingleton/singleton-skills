@@ -1,0 +1,2 @@
+# Local checks and CI use the same linter version.
+ruff==0.17.3

@@ -8,6 +8,7 @@
 __pycache__/
 *.egg-info/
 .venv/
+.ruff_cache/
 
 # Eval outputs (generated, not committed)
 **/evals-workspace/
