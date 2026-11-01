@@ -20,6 +20,7 @@ SUPPORTED = (
     "html-artifacts",
     "imessage-search",
     "linear-author",
+    "linear-update",
     "organize-screenshots",
     "pdf-document-ingestion",
     "plain-english-docs",
