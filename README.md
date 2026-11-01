@@ -23,6 +23,7 @@ but are not yet portability-certified.
 | `imessage-search` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | macOS Messages access and Full Disk Access are environmental requirements. Small-model delegation is optional; direct execution is the guaranteed fallback. |
 | `linear-author` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Drafts and rewrites issues with a shared preservation and mutation contract; connected Linear capabilities are optional. |
 | `linear-triage` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Read-only actionable frontier and inconsistency findings; requires the sibling linear-author shared contract. |
+| `linear-update` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Reconciles progress and evidence with minimal verified edits; requires the bundled linear-author shared contract. |
 | `visible-delegation` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Delegates bounded work through named, attachable tmux sessions and independently verifies results before cleanup. |
 | `organize-screenshots` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Organizes screenshot collections into chronological, deduplicated groups. |
 | `pdf-document-ingestion` | Candidate; contract-tested | Intended: Claude Code, Codex, Cursor | Ingests PDF documents into searchable, structured text. |

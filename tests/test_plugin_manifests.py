@@ -29,6 +29,7 @@ EXPECTED_SKILLS = {
     "imessage-search",
     "linear-author",
     "linear-triage",
+    "linear-update",
     "learn-from-context",
     "media-transcription",
     "new-skill",

@@ -21,6 +21,7 @@ SUPPORTED = (
     "imessage-search",
     "linear-author",
     "linear-triage",
+    "linear-update",
     "organize-screenshots",
     "pdf-document-ingestion",
     "plain-english-docs",
