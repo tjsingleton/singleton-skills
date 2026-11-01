@@ -42,7 +42,11 @@ With no scope, show these examples and ask which queue or issues to assess.
 4. Build the actual unblocked frontier in the retrieved dependency graph. Read
    prerequisites rather than treating a readiness label as sufficient. Include
    only work whose prerequisites, required decisions, information, and authority
-   permit its stated next action. A blocked implementation may have a separate
+   permit its stated next action. A snapshot saying only “independent and ready”
+   supports a conditional candidate, not an implementation frontier. Retrieve
+   its outcome, requirements, and execution authority before recommending an
+   implementation start; until then, its next action is that retrieval.
+   A blocked implementation may have a separate
    actionable information-gathering step: name that step without calling the
    implementation ready. Missing dependencies or unresolved cycles leave the
    affected readiness unknown. Explain completed prerequisites using evidence;
