@@ -41,16 +41,69 @@ class SkillInstallerTests(unittest.TestCase):
         self.claude = self.root / "claude"
         self.roots = {"shared": self.shared, "claude": self.claude}
 
+    def release_file(self):
+        path = self.root / "release.json"
+        path.write_text(json.dumps({"schema_version": 1, "plugin": "singleton-skills",
+            "version": "1.5.0", "source_revision": "a" * 40,
+            "archive_sha256": "b" * 64, "skills": ["git-triage"]}))
+        return path
+
+    def test_inventory_recipe_uses_selected_release_and_literal_paths(self):
+        release = self.release_file()
+        shared = self.root / '$(touch INJECTED) `touch INJECTED` "quote"'
+        shared.mkdir()
+        for name in ("git-triage", "imessage-search"):
+            (shared / name).mkdir()
+            (shared / name / "SKILL.md").write_text("synthetic")
+        result = subprocess.run(["just", "inventory", str(release), "shared", str(shared)],
+            cwd=REPOSITORY_ROOT, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual(report["package"], {"version": "1.5.0", "source_revision": "a" * 40,
+                                          "archive_sha256": "b" * 64})
+        self.assertEqual([e["classification"] for e in report["entries"]],
+                         ["overlap-candidate", "direct-only"])
+
+    def test_inventory_classifies_only_verified_skill_directories(self):
+        self.shared.mkdir()
+        (self.shared / "git-triage").write_text("foreign")
+        (self.shared / "directory").mkdir()
+        (self.shared / "file-link").symlink_to(self.shared / "git-triage")
+        (self.shared / "directory-link").symlink_to(self.shared / "directory")
+        (self.shared / "broken").symlink_to("missing")
+        completed = subprocess.run([sys.executable,
+            str(REPOSITORY_ROOT / "scripts/skill_installer.py"), "inventory",
+            "--release", str(self.release_file()), "--shared-dir", str(self.shared)],
+            text=True, capture_output=True, check=True)
+        report = json.loads(completed.stdout)
+        self.assertEqual({e["skill"]: e["classification"] for e in report["entries"]}, {
+            "git-triage": "foreign-content", "directory": "foreign-content",
+            "file-link": "foreign-content", "directory-link": "foreign-content",
+            "broken": "unknown-link"})
+
+    def test_inventory_requires_valid_release_identity_without_writes(self):
+        script = str(REPOSITORY_ROOT / "scripts/skill_installer.py")
+        release = self.release_file()
+        for invalid in (None, {}, {"schema_version": 1, "skills": ["../escape"]}):
+            args = [sys.executable, script, "inventory", "--shared-dir", str(self.shared)]
+            if invalid is not None:
+                release.write_text(json.dumps(invalid))
+                args += ["--release", str(release)]
+            completed = subprocess.run(args, text=True, capture_output=True)
+            self.assertNotEqual(completed.returncode, 0)
+            self.assertIn("release", completed.stderr)
+            self.assertFalse(self.shared.exists())
+
     def test_inventory_preserves_owned_legacy_and_foreign_entries(self) -> None:
         installer.install(self.repo, "default", "shared", self.roots)
         (self.repo / "skills/git-triage/SKILL.md").write_text("synthetic")
         (self.shared / "legacy-only").symlink_to(self.repo / "skills/retired")
         (self.shared / "foreign").write_text("untouched")
-        report = installer.migration_inventory(self.repo, "all", self.roots, {"shared": ["Cursor"]})
+        report = installer.migration_inventory(self.repo, "all", self.roots, {"shared": ["Cursor"]}, self.release_file())
         entries = {row["skill"]: row for row in report["entries"]}
         self.assertEqual(entries["git-triage"]["classification"], "overlap-candidate")
         self.assertEqual(entries["git-triage"]["ownership"], "checkout-provenance")
-        self.assertEqual(entries["legacy-only"]["classification"], "direct-only")
+        self.assertEqual(entries["legacy-only"]["classification"], "unknown-link")
         self.assertEqual(entries["legacy-only"]["ownership"], "unproven")
         self.assertEqual(entries["foreign"]["ownership"], "unproven")
         self.assertEqual(entries["foreign"]["classification"], "foreign-content")
@@ -67,9 +120,10 @@ class SkillInstallerTests(unittest.TestCase):
         shutil.copy2(REPOSITORY_ROOT / "scripts/skill_installer.py", scripts)
         self.shared.mkdir()
         (self.shared / "old-skill").symlink_to("missing-source")
+        self.release_file()
         before = sorted(str(p) for p in self.root.rglob("*"))
         completed = subprocess.run(
-            [sys.executable, str(scripts / "skill_installer.py"), "inventory",
+            [sys.executable, str(scripts / "skill_installer.py"), "inventory", "--release", str(self.release_file()),
              "--target", "all", "--shared-dir", str(self.shared),
              "--claude-dir", str(self.claude)],
             text=True, capture_output=True, check=True,
