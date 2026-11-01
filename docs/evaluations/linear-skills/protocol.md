@@ -35,3 +35,14 @@ Publish only minimized findings after actual participation and privacy review:
 - Remaining acceptance gates:
 
 Current outcome: pending participant observations. Engineering preparation and synthetic execution cannot close the human evidence gate. Keep TJ-149 open until actual observations, preservation review, warranted repairs/re-evaluation, and an evidence-backed decision are recorded.
+
+## Revision 2 presentation
+
+Keep this packet and its pins as revision 1 history. Use the separately pinned
+`revision2/` packet for the bounded presentation repair. Present one complete
+issue-like Markdown version inside a fenced code block, followed by short task
+questions outside the block. Preserve the original source semantics, explicitly
+label formatting assistance, and keep the facilitator key separate. Present
+one version at a time. Record repeated exposure, assistance, and learning effects;
+the reformatted original is not an untouched natural issue. Missing answers and
+timing remain missing. The repair does not complete the pilot or establish benefit.

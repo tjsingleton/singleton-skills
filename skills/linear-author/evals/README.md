@@ -31,3 +31,12 @@ The full check passes with a writable temporary `PYTHONPYCACHEPREFIX`: 65
 repository tests, 12 Git-triage evaluation tests, and Python compilation. The
 initial default cache location was outside the process sandbox; the tests
 passed but compilation could not write that cache. No browser was launched.
+
+## Checklist presentation regression
+
+The shared-contract checklist repair has a separately pinned fresh synthetic
+execution in `docs/evaluations/linear-skills/revision2/` at repository root. It
+covers bounded verified evidence, missing acceptance, dated history, reported
+approval, and the draft-only author/update/triage handoff. Its complete outputs
+and operation accounting are distinct from earlier transcripts. Human evaluation
+of that packet remains pending; these executions do not demonstrate usability.

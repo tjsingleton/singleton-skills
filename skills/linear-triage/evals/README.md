@@ -21,3 +21,12 @@ Adding the candidate before its package and README row existed produced three
 portable conformance failures and one error. Adding the package and discovery
 row resolves that packaging failure. This is separate from model behavior:
 there is no claim that a failing model behavior was repaired by those edits.
+
+## Checklist presentation regression
+
+The shared-contract checklist repair has a separately pinned fresh synthetic
+execution in `docs/evaluations/linear-skills/revision2/` at repository root. It
+covers bounded verified evidence, missing acceptance, dated history, reported
+approval, and the draft-only author/update/triage handoff. Its complete outputs
+and operation accounting are distinct from earlier transcripts. Human evaluation
+of that packet remains pending; these executions do not demonstrate usability.
