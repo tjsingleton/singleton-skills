@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Prepare an identifiable, unpublished package from one committed revision."""
 import argparse
+import gzip
 import hashlib
 import io
 import json
@@ -59,13 +60,34 @@ def prepare(output: Path, revision: str) -> None:
             raise ValueError('release registration manifests are missing')
         if len(versions) != 1 or not skills:
             raise ValueError('release versions disagree or skill inventory is empty')
+    # Work treats catalogs as marketplace uploads. Keep the registration archive
+    # intact and derive a standalone plugin from exactly the same committed files.
+    catalogs = {'.claude-plugin/marketplace.json', '.cursor-plugin/marketplace.json',
+                '.agents/plugins/marketplace.json'}
+    standalone = io.BytesIO()
+    with tarfile.open(fileobj=io.BytesIO(archive)) as package:
+        with tarfile.open(fileobj=standalone, mode='w') as upload:
+            for member in package.getmembers():
+                if member.name not in catalogs:
+                    upload.addfile(member, package.extractfile(member) if member.isfile() else None)
+    compressed = io.BytesIO()
+    with gzip.GzipFile(fileobj=compressed, mode='wb', filename='', mtime=0) as stream:
+        stream.write(standalone.getvalue())
+    work_archive = compressed.getvalue()
     report = {'schema_version': 1, 'plugin': 'singleton-skills',
               'version': versions.pop(), 'source_revision': source,
               'skills': sorted(skills), 'files': files,
               'archive_sha256': hashlib.sha256(archive).hexdigest(),
+              'work_upload': {
+                  'archive': 'singleton-skills-work.tar.gz',
+                  'archive_sha256': hashlib.sha256(work_archive).hexdigest(),
+                  'files': {name: digest for name, digest in files.items() if name not in catalogs},
+                  'host_verification': 'pending; archive generation is not upload acceptance',
+              },
               'host_verification': 'pending; preparation is not installation or publication'}
     output.mkdir(parents=True, exist_ok=False)
     (output / 'singleton-skills.tar').write_bytes(archive)
+    (output / 'singleton-skills-work.tar.gz').write_bytes(work_archive)
     (output / 'release.json').write_text(json.dumps(report, indent=2) + '\n')
 
 
