@@ -1,8 +1,8 @@
 skills_dir := justfile_directory() / "skills"
 root := justfile_directory()
 
-# Run all repository tests, portable-core conformance checks, and Python syntax checks
-check:
+# Run lint, repository tests, portable-core conformance, and Python syntax checks
+check: lint
     #!/usr/bin/env bash
     set -euo pipefail
     python3 -m unittest discover -s "{{root}}/tests" -p 'test_*.py'
@@ -13,6 +13,10 @@ check:
         "{{root}}/skills/amazon-writing-style/scripts" \
         "{{root}}/skills/git-triage/evals" \
         "{{root}}/skills/imessage-search/scripts"
+
+# Check Python correctness without changing files
+lint:
+    python3 -m ruff check --config "{{root}}/ruff.toml" "{{root}}/scripts" "{{root}}/tests" "{{root}}/skills"
 
 # Show support, installation, and checkout ownership independently
 list target="shared" shared_dir="" claude_dir="":
