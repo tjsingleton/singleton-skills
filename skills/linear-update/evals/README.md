@@ -32,3 +32,13 @@ are retained separately in `behavior-results.md`.
 `PYTHONPYCACHEPREFIX` can select a writable temporary compilation-cache directory
 when running `just check` in a restricted host environment. No browser or live
 Linear connector is required for these checks.
+
+## Preservation regression
+
+Review found that the original combined execution lost a reported activation
+approval decision. Its payload remains verbatim in `behavior-results.md`, with
+the judgment corrected to failure. A fresh evaluator reran the same source
+request after the instruction fix, without access to the oracle or prior
+output. The original set has seven passes and one failure; the affected rerun
+has one pass. Nine cumulative executions therefore contain eight passes and
+one failure. These counts describe these observations only.
