@@ -3,6 +3,8 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import shutil
+import subprocess
 import sys
 import tempfile
 import threading
@@ -38,6 +40,45 @@ class SkillInstallerTests(unittest.TestCase):
         self.shared = self.root / "shared"
         self.claude = self.root / "claude"
         self.roots = {"shared": self.shared, "claude": self.claude}
+
+    def test_inventory_preserves_owned_legacy_and_foreign_entries(self) -> None:
+        installer.install(self.repo, "default", "shared", self.roots)
+        (self.repo / "skills/git-triage/SKILL.md").write_text("synthetic")
+        (self.shared / "legacy-only").symlink_to(self.repo / "skills/retired")
+        (self.shared / "foreign").write_text("untouched")
+        report = installer.migration_inventory(self.repo, "all", self.roots, {"shared": ["Cursor"]})
+        entries = {row["skill"]: row for row in report["entries"]}
+        self.assertEqual(entries["git-triage"]["classification"], "overlap-candidate")
+        self.assertEqual(entries["git-triage"]["ownership"], "checkout-provenance")
+        self.assertEqual(entries["legacy-only"]["classification"], "direct-only")
+        self.assertEqual(entries["legacy-only"]["ownership"], "unproven")
+        self.assertEqual(entries["foreign"]["ownership"], "unproven")
+        self.assertEqual(entries["foreign"]["classification"], "foreign-content")
+        self.assertEqual(entries["git-triage"]["affected_consumers"], ["Cursor"])
+        self.assertFalse(entries["git-triage"]["cleanup_ready"])
+        self.assertEqual(entries["git-triage"]["restoration"]["link_value"], str((self.repo / "skills/git-triage").resolve()))
+        self.assertEqual((self.shared / "foreign").read_text(), "untouched")
+        self.assertFalse(self.claude.exists())
+        self.assertIn("claude", report["unresolved_consumers"])
+
+    def test_inventory_command_is_read_only_and_reports_unknown_consumers(self) -> None:
+        scripts = self.repo / "scripts"
+        scripts.mkdir()
+        shutil.copy2(REPOSITORY_ROOT / "scripts/skill_installer.py", scripts)
+        self.shared.mkdir()
+        (self.shared / "old-skill").symlink_to("missing-source")
+        before = sorted(str(p) for p in self.root.rglob("*"))
+        completed = subprocess.run(
+            [sys.executable, str(scripts / "skill_installer.py"), "inventory",
+             "--target", "all", "--shared-dir", str(self.shared),
+             "--claude-dir", str(self.claude)],
+            text=True, capture_output=True, check=True,
+        )
+        report = json.loads(completed.stdout)
+        self.assertEqual(report["unresolved_consumers"], ["shared", "claude"])
+        self.assertEqual(report["entries"][0]["restoration"]["link_value"], "missing-source")
+        self.assertEqual(sorted(str(p) for p in self.root.rglob("*")), before)
+        self.assertFalse((self.repo / installer.LOCK_NAME).exists())
 
     def test_default_set_installs_only_supported_skills_with_versioned_provenance(self) -> None:
         changed = installer.install(self.repo, "default", "shared", self.roots)
