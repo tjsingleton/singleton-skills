@@ -27,6 +27,7 @@ EXPECTED_SKILLS = {
     "image-gateway",
     "image-markup",
     "imessage-search",
+    "linear-author",
     "learn-from-context",
     "media-transcription",
     "new-skill",
