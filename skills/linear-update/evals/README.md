@@ -42,3 +42,12 @@ request after the instruction fix, without access to the oracle or prior
 output. The original set has seven passes and one failure; the affected rerun
 has one pass. Nine cumulative executions therefore contain eight passes and
 one failure. These counts describe these observations only.
+
+## Checklist presentation regression
+
+The shared-contract checklist repair has a separately pinned fresh synthetic
+execution in `docs/evaluations/linear-skills/revision2/` at repository root. It
+covers bounded verified evidence, missing acceptance, dated history, reported
+approval, and the draft-only author/update/triage handoff. Its complete outputs
+and operation accounting are distinct from earlier transcripts. Human evaluation
+of that packet remains pending; these executions do not demonstrate usability.
