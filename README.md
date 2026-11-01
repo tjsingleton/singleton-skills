@@ -277,7 +277,11 @@ references and scripts. Uncommitted edits are excluded. Select an explicit
 commit instead of `HEAD` when preparing an older release. The output directory
 must not already exist. `release.json` records the resolved source commit,
 coordinated version, skill inventory, SHA-256 of every packaged file, and archive
-hash. The same archive contains Claude, OpenAI and Cursor registration files.
+hash. `singleton-skills.tar` contains Claude, OpenAI and Cursor registration
+files. `singleton-skills-work.tar.gz` is a standalone upload candidate for
+ChatGPT Work, omitting only the three marketplace catalogs. Its archive hash and
+file inventory appear under `work_upload` in the report. Archive preparation
+does not establish ChatGPT Work upload acceptance or compatibility.
 Review those contents before separately authorizing publication. Preparation
 publishes nothing and changes no installed host configuration.
 

@@ -83,9 +83,32 @@ repository. No public marketplace submission occurred.
 
 ## ChatGPT Work
 
-Pending independent installation, discovery, selected invocation, bundled-resource
-behavior, and runtime-capability checks in ChatGPT Work. Its shared installation
-state is supporting context, not evidence of a completed Work test.
+On 2026-11-01, the personal plugin directory in ChatGPT's web interface did not
+list Singleton Skills. Add → Upload plugin archive rejected a compressed copy of
+the combined registration archive with the message:
+
+> Marketplace archive does not include any local plugins to upload
+
+That archive includes marketplace catalogs whose source points to the repository
+root. The observed rejection concerns marketplace interpretation; it does not
+establish acceptance of a standalone plugin.
+
+`just prepare-release OUTPUT REVISION` now also generates
+`singleton-skills-work.tar.gz` from the same committed source. It omits only
+`.claude-plugin/marketplace.json`, `.cursor-plugin/marketplace.json`, and
+`.agents/plugins/marketplace.json`. Plugin manifests, skill instructions, scripts,
+and references remain included. The original `singleton-skills.tar` registration
+archive is unchanged. `release.json` records the standalone archive SHA-256 and
+its per-file hash inventory under `work_upload`.
+
+A standalone upload attempt was interrupted by the browser tooling error
+"native pipe closed" before acceptance could be established. Live upload remains
+pending browser extension file access. Generating the archive and checking its
+contents do not establish host acceptance.
+
+Independent installation, discovery, selected invocation, bundled-resource
+behavior, and runtime-capability checks remain pending in ChatGPT Work. Shared
+installation state is supporting context, not evidence of a completed Work test.
 
 The command route follows [official OpenAI plugin packaging documentation](https://developers.openai.com/plugins/build/plugins).
 The installed CLI help also documents `plugin add`, `plugin list`, and the

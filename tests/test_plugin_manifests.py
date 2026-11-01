@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
 import shutil
 import subprocess
+import tarfile
 import tempfile
 import unittest
 from pathlib import Path
@@ -220,6 +222,45 @@ class PluginManifestTests(unittest.TestCase):
             self.assertEqual(set(report["skills"]), EXPECTED_SKILLS)
             self.assertIn("skills/linear-author/references/linear-contract.md", report["files"])
             self.assertTrue((output / "singleton-skills.tar").is_file())
+
+    def test_release_provides_reproducible_standalone_work_upload(self) -> None:
+        catalogs = {".claude-plugin/marketplace.json", ".cursor-plugin/marketplace.json",
+                    ".agents/plugins/marketplace.json"}
+        with tempfile.TemporaryDirectory() as temp_name:
+            archives = []
+            for attempt in ("first", "second"):
+                output = Path(temp_name) / attempt
+                result = subprocess.run(
+                    ["just", "prepare-release", str(output), "HEAD"],
+                    cwd=ROOT, text=True, capture_output=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                report = json.loads((output / "release.json").read_text())
+                upload = output / "singleton-skills-work.tar.gz"
+                self.assertTrue(upload.is_file(), "Work requires a standalone upload archive")
+                archives.append(upload.read_bytes())
+                with tarfile.open(upload) as package:
+                    contents = {member.name: package.extractfile(member).read()
+                                for member in package.getmembers() if member.isfile()}
+                self.assertEqual(set(contents), set(report["files"]) - catalogs)
+                self.assertEqual(report["work_upload"]["files"],
+                                 {name: digest for name, digest in report["files"].items()
+                                  if name not in catalogs})
+                self.assertEqual(report["work_upload"]["files"],
+                                 {name: hashlib.sha256(content).hexdigest()
+                                  for name, content in contents.items()})
+                self.assertEqual(report["work_upload"]["archive_sha256"],
+                                 hashlib.sha256(archives[-1]).hexdigest())
+                self.assertEqual(report["work_upload"]["archive"], upload.name)
+                with tarfile.open(output / "singleton-skills.tar") as package:
+                    self.assertTrue(catalogs.issubset(package.getnames()))
+                original = subprocess.check_output([
+                    "git", "archive", "--format=tar", report["source_revision"], "--",
+                    "plugin.json", ".claude-plugin", ".codex-plugin", ".cursor-plugin",
+                    ".agents/plugins", "skills", "LICENSE", "README.md", "supported-skills.txt"],
+                    cwd=ROOT)
+                self.assertEqual((output / "singleton-skills.tar").read_bytes(), original)
+                self.assertEqual(report["archive_sha256"], hashlib.sha256(original).hexdigest())
+            self.assertEqual(archives[0], archives[1])
 
     def test_release_rejects_divergent_committed_versions_without_output(self) -> None:
         with tempfile.TemporaryDirectory() as temp_name:
