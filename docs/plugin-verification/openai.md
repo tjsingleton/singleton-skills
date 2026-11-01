@@ -102,9 +102,14 @@ archive is unchanged. `release.json` records the standalone archive SHA-256 and
 its per-file hash inventory under `work_upload`.
 
 A standalone upload attempt was interrupted by the browser tooling error
-"native pipe closed" before acceptance could be established. Live upload remains
-pending browser extension file access. Generating the archive and checking its
-contents do not establish host acceptance.
+"native pipe closed" before acceptance could be established. Later browser
+attempts reported
+"Creating browser windows from extensions is not supported in Owl" and
+"Browser unavailable". Native ChatGPT app access was denied by the safety
+review. Supported upload and desktop verification surfaces were unavailable.
+Browser extension file access was suggested as remediation; it was not a proven
+cause. Generating the archive and checking its contents do not establish host
+acceptance.
 
 Independent installation, discovery, selected invocation, bundled-resource
 behavior, and runtime-capability checks remain pending in ChatGPT Work. Shared
