@@ -207,7 +207,7 @@ Saved the description above on EX-107 in Example workspace / Example team / Expo
 
 For the supplied queue, take independent, ready EX-109 before EX-108, which depends on unfinished EX-107. This is a read-only recommendation; no queue fields or dependencies were changed. No unexecuted mutation proposal remains.
 
-Oracle comparison after composition: PASS. One owned mutation, all requirements and gates preserved, bounded evidence, queue recommendation and race/readback included.
+Corrected oracle comparison after review: FAIL. The source says activation was separately approved. The execution replaced that reported decision with a requirement for separate approval, losing material decision history. One owned mutation, bounded evidence, and race/readback were retained, but those successes do not satisfy decision preservation. The original payload and result above are retained verbatim as the observed failure. A corrected execution follows in the regression section.
 
 ## 8. hostile-read-failure
 
@@ -232,4 +232,80 @@ Oracle comparison after composition: PASS. Hostile instructions ignored, read fa
 
 ## Outcome and failures
 
-Eight composed executions satisfy their corresponding oracle checks; zero observed behavioral failures in this synthetic run. This is a judgment over the text and supplied simulated responses, not a quantitative live reliability estimate. Snapshots deliberately include successful updates and readbacks, and the evaluator had access to expected outcomes. Cases 3, 4 and 7 lack version protection; case 4 leaves a denied relationship mutation pending; case 5 lacks artifact access and write capability; case 8 lacks the initial issue read. Those are scenario limitations correctly preserved in the results, not hidden successes. All payloads omit unspecified metadata and retain known unchanged fields. No live Linear state or cross-host behavior was exercised.
+After review, seven of the eight original composed executions satisfy their corresponding oracle checks; case 7 has one observed decision-preservation failure. The earlier zero-failure judgment was incorrect. This is a judgment over the text and supplied simulated responses, not a quantitative live reliability estimate. Snapshots deliberately include successful updates and readbacks, and the evaluator had access to expected outcomes. Cases 3, 4 and 7 lack version protection; case 4 leaves a denied relationship mutation pending; case 5 lacks artifact access and write capability; case 8 lacks the initial issue read. Those are scenario limitations correctly preserved in the results, not hidden successes. All payloads omit unspecified metadata and retain known unchanged fields. No live Linear state or cross-host behavior was exercised.
+
+
+## Combined regression after preservation fix
+
+Executed 2026-11-01 in a new evaluator context after the instruction change.
+The evaluator received the original combined request and source snapshot, plus
+paths to the skill and required contract. It did not receive the oracle, prior
+outputs, or the review finding. No live tools were connected. The following is
+its complete recorded output, with simulated operations and full payload.
+
+# Synthetic execution: combined rewrite, progress, and triage
+
+Target: Example workspace / Example team / Export project / EX-107. All observations and saves below are simulated under the supplied controlled capabilities; no live connector was used.
+
+Ownership: linear-update reconciles run-8 and the reported approval into an evidence inventory. linear-author owns the single combined description mutation, incorporating that reconciliation. linear-triage owns read-only queue findings. No second progress write or repetitive comment is necessary.
+
+## Complete replacement description payload
+
+```markdown
+Deliver CSV and JSON exports that preserve Unicode and null values and support cancellation. CSV Unicode and null behavior is verified by accessible run-8. JSON behavior, cancellation, and the required human walkthrough remain unresolved. Next, verify the remaining export requirements and complete the human walkthrough before claiming acceptance.
+
+Acceptance criteria and evidence:
+- CSV export preserves Unicode and null values. Verified by run-8; its evidence covers CSV Unicode/null behavior only.
+- JSON export preserves Unicode and null values. Unresolved: no supporting result is supplied by run-8.
+- Export supports cancellation. Unresolved: run-8 does not establish cancellation behavior.
+- Complete the required human walkthrough. Outstanding: no walkthrough evidence is available. Passing automated tests does not satisfy this gate.
+
+Authority and activation:
+Activation is reported as separately approved. The supplied report is retained as a decision record; no independent approval artifact or scope verification is supplied. No activation is performed by this issue update. Verify the reported approval's scope before relying on it for a contemplated activation action. The approval report does not establish completion of the required human walkthrough.
+
+Prior checkpoint:
+The source description recorded current tests as pending. The new run-8 evidence resolves the CSV Unicode/null criterion only; other test and acceptance requirements remain open. No checkpoint date was supplied.
+```
+
+Changed field: description only, exactly the payload above. Reason: clarify the outcome and acceptance criteria while recording bounded progress and preserving the approval report and remaining gates. Title is unspecified and unchanged. Status remains In Progress; priority, labels, project, parent, and native dependencies are unchanged and are not resent. No native relationship operation is proposed.
+
+## Ordered operations and observations
+
+1. Read linear-update and its required shared contract, then linear-author and linear-triage. Resolve the named existing target from the supplied snapshot; do not invent native IDs.
+2. Read the controlled issue source, native state, queue relationships, all relevant comments and parents. The supplied snapshot reports no additional constraints. Inventory CSV, JSON, Unicode, nulls, cancellation, pending tests, required walkthrough, and separately reported activation approval. No creation or duplicate merge is contemplated.
+3. Inspect accessible run-8 under the simulated evidence capability. Record only its supplied conclusion: CSV Unicode/null behavior passes. It does not establish JSON, cancellation, human acceptance, or authority to activate. No artifact URL, timestamp, or approval document is invented.
+4. Reconcile progress once, then author the complete combined replacement above. Preserve every source requirement and authority boundary. No evidence supports a completion transition. Actual team status definitions and label conventions are not supplied; propose no status or label changes.
+5. Immediately before mutation, refresh the issue, comments, parent, metadata, and dependencies. Controlled result: unchanged from the drafting source; no overlapping concurrent edits detected. No native version preconditions exist. An unresolved read/write race remains even after this refresh.
+6. Send one description-only update to EX-107. Controlled response: succeeds. Send no status, priority, dependency, label, title, or other metadata mutation; add no duplicate progress comment.
+7. Read back the issue. Controlled result: description matches the exact payload; status remains In Progress and priority and dependencies remain unchanged. Readback verifies observed saved state but does not lock it against later changes.
+8. Assess the queue read-only using the refreshed dependency information. Recommend EX-109 as the next ready item. Keep EX-108 blocked on EX-107. Report remaining EX-107 acceptance work without mutating the queue.
+
+## User-facing result
+
+Saved the combined clarity rewrite and progress update to EX-107 in the Example workspace, Example team, Export project. Readback matched the complete replacement description above. EX-107 remains In Progress; priority and dependencies are unchanged.
+
+Run-8 verifies CSV Unicode and null handling only. JSON behavior, cancellation, and the required human walkthrough still need evidence. The description preserves the report that activation was separately approved, including the limit that the approval's scope has not been independently verified here. No activation occurred.
+
+Queue recommendations:
+- EX-109 is the next actionable item: the controlled snapshot identifies it as independent and ready. Begin its specified work; its title, detailed outcome, acceptance criteria, and next implementation step were not supplied, so those details require reading EX-109 before execution.
+- EX-108 remains blocked by EX-107. Reassess its readiness after the prerequisite's applicable acceptance requirements are met; no dependency was removed.
+- EX-107 needs remaining requirement verification and the required human walkthrough. Arrange that human acceptance work and obtain evidence for JSON and cancellation.
+
+Coverage is limited to the supplied three-issue snapshot, comments, parents, relationships, and accessible run-8. No additional constraints or read failures were reported. Team status semantics and label mappings were not provided; no transition or label recommendation depends on invented conventions. Triage made zero writes. Overall operation accounting: one description update, zero comments, zero creates, and zero native field or relationship updates. All requested description work is verified saved in this simulation; queue findings remain recommendations. No version precondition was available, so a concurrent edit race remains possible despite the successful refresh and readback.
+
+
+Regression oracle comparison: PASS. The sole owned description write preserves
+CSV/JSON, Unicode/nulls, cancellation, remaining tests, and the missing human
+walkthrough. It retains the reported activation approval with its unverified
+scope and requires scope verification before relying on it. Run-8 stays bounded
+to CSV Unicode/null behavior. Triage recommends EX-109 before blocked EX-108,
+with no duplicate writes, and readback and the unresolved race are explicit.
+The output's final operation count uses “native field” for unchanged metadata;
+the description update is separately counted and its complete payload appears
+above.
+
+Cumulative observed executions: nine, with eight passes and one failure. The
+original set remains seven passes and one failure; the affected fresh rerun
+passes once. This rerun does not erase the original failure or re-evaluate the
+other seven cases. These are synthetic instruction-following observations, not
+a live reliability estimate, human pilot result, or cross-host certification.

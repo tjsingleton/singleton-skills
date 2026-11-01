@@ -59,9 +59,9 @@
       "id": "combined",
       "prompt": "Rewrite EX-107 for clarity, update it with new progress, and triage the queue. Save the rewrite and progress.",
       "snapshot": "Example/Example/Export. EX-107 In Progress. Description: Export CSV and JSON; preserve Unicode and nulls; support cancellation. Current tests pending. New accessible run-8 proves CSV Unicode/null behavior only. Human walkthrough required and missing; activation separately approved. Queue: EX-108 depends on EX-107; EX-109 independent and ready. All comments and parents read, no additional constraints. Before write fresh read unchanged. No version preconditions. One description update succeeds; readback exact description, unchanged status, priority and dependencies.",
-      "expected_output": "One description mutation owned by author incorporating update evidence; no duplicate progress comment or triage writes. Preserve CSV/JSON, Unicode/nulls/cancellation, walkthrough, activation boundary; qualify evidence; recommend EX-109 before blocked EX-108. Readback and race disclosure.",
+      "expected_output": "One description mutation owned by author incorporating update evidence; no duplicate progress comment or triage writes. Preserve CSV/JSON, Unicode/nulls/cancellation, walkthrough, and the reported separate activation approval as reported/unverified; verify approval scope before any activation; qualify evidence; recommend EX-109 before blocked EX-108. Readback and race disclosure.",
       "expectations": [
-        "One description mutation owned by author incorporating update evidence; no duplicate progress comment or triage writes. Preserve CSV/JSON, Unicode/nulls/cancellation, walkthrough, activation boundary; qualify evidence; recommend EX-109 before blocked EX-108. Readback and race disclosure."
+        "One description mutation owned by author incorporating update evidence; no duplicate progress comment or triage writes. Preserve CSV/JSON, Unicode/nulls/cancellation, walkthrough, and the reported separate activation approval as reported/unverified; verify approval scope before any activation; qualify evidence; recommend EX-109 before blocked EX-108. Readback and race disclosure."
       ]
     },
     {
