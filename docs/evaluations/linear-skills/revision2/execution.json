@@ -1,6 +1,6 @@
 {
-  "skill_revision": "f52f67c88df02bdaecbfd1737374b4dbc634553d",
-  "provenance": "A/C executed at d2576cf; shared contract, author and update unchanged at f52f67c. B rerun at f52f67c after triage clarification. Exact response texts retained.",
+  "skill_revision": "5977182f2f4b695acea0b9f127d9d29ab0772ab8",
+  "provenance": "A/C executed at d2576cf; shared contract, author and update unchanged at f52f67c. B rerun at f52f67c after triage clarification. That commit is absent from this repository; the packet pin uses checked-in commit 5977182, whose four instruction files match the recorded hashes byte-for-byte. Exact response texts retained.",
   "cases": [
     {
       "id": "A",
